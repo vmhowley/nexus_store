@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "predeploy": "npm run build",
-    "deploy": "git add . && git commit -m 'deploy' && git push origin master"
+    "deploy": "git add . && git commit -m 'deploying' && git push origin master"
   },
   "dependencies": {
     "firebase": "^10.8.0",
