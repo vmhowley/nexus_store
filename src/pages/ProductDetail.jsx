@@ -86,7 +86,7 @@ export default function ProductDetail() {
           </div>
 
           <div>
-            <h1 className="text-4xl font-bold text-white mb-4">{product.name}</h1>
+            <h1 className="text-4xl font-bold text-primary mb-4">{product.name}</h1>
             <div className="flex items-center mb-6">
               <div className="flex items-center">
                 <Star className="h-5 w-5 text-yellow-500 fill-current" />

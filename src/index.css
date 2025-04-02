@@ -8,26 +8,13 @@
   If we ever want to remove these styles, we need to add an explicit border
   color utility to any element that depends on these defaults.
 */
-@layer base {
-  *,
-  ::after,
-  ::before,
-  ::backdrop,
-  ::file-selector-button {
-    border-color: var(--color-gray-200, currentColor);
-  }
-}
 
-@theme {
-  --font-display: "Satoshi", "sans-serif";
-  --breakpoint-3xl: 120rem;
-  --color-primary: oklch(0.59 0.1403 143.12);
-  --color-secundary: oklch(0.67 0.1331 162.28);
-  --color-third: oklch(0.78 0.1199 190.23);
-  --color-avocado-400: oklch(0.92 0.19 114.08);
-  --color-avocado-500: oklch(0.84 0.18 117.33);
-  --color-avocado-600: oklch(0.53 0.12 118.34);
-  --ease-fluid: cubic-bezier(0.3, 0, 0, 1);
-  --ease-snappy: cubic-bezier(0.2, 0, 0, 1);
-  /* ... */
+@theme  {
+  
+    --color-primary: #2EAF7D;
+    --color-secondary: #449342;
+    --color-dark: #02353C;
+    --color-light: #C1F6ED;
+    --color-accent: #3FD0C9;
+  
 }
