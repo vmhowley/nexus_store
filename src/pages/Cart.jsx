@@ -41,25 +41,25 @@ const Cart = () => {
   const total = subtotal + tax;
 
   return (
-    <div className="pt-20 bg-dark min-h-screen">
+    <div className="pt-20 bg-dark min-h-screen ">
       {cartItems.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-xl text-gray-400">Your cart is empty</p>
         </div>
       ) : (
-        <div className="pt-20 min-h-screen text-white grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
+        <div className="pt-20 min-h-screen text-white grid grid-cols-1 lg:grid-cols-3 gap-8  max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+          <div className="lg:col-span-2 ">
             {cartItems.map((item) => (
               <div
                 key={item.id}
                 className="bg-light rounded-lg p-4 mb-4 flex items-center gap-4"
               >
                 <img
-                  src={item.image}
+                  src={item.images[0]}
                   alt={item.name}
-                  className="w-24 h-24 object-cover rounded-sm"
+                  className="w-24 h-24 object-fill object-center rounded-sm"
                 />
-                <div className="grow">
+                <div className="grow space-y-3">
                   <h3 className="text-lg text-dark font-semibold">{item.name}</h3>
                   <p className="text-dark font-bold">${item.price}</p>
                 </div>
