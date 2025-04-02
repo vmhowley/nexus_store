@@ -29,7 +29,7 @@ export default function FeaturedProducts() {
 
   if (loading) {
     return (
-      <div className="bg-gray-200 py-24">
+      <div className="bg-dark py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-lime-500 mx-auto"></div>
@@ -52,18 +52,18 @@ export default function FeaturedProducts() {
   }
 
   return (
-    <div className="bg-gray-200 py-24">
+    <div className="bg-dark py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-black mb-4">Featured Builds</h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">Experience computing excellence with our carefully curated selection of premium pre-built systems.</p>
+          <h2 className="text-4xl font-bold text-light mb-4">Featured Builds</h2>
+          <p className="text-accent max-w-2xl mx-auto">Experience computing excellence with our carefully curated selection of premium pre-built systems.</p>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (
             <div 
               key={product.id} 
-              className="bg-gray-600 shadow-md rounded-2xl overflow-hidden border border-lime-500/20 hover:border-lime-500/40 transition-all cursor-pointer transform hover:scale-[1.02] hover:shadow-xl hover:shadow-lime-500/10"
+              className="bg-light shadow-md rounded-2xl overflow-hidden border border-secondary/20 hover:border-accent/40 transition-all cursor-pointer transform hover:scale-[1.02] hover:shadow-xl hover:shadow-lime-500/10"
               onClick={() => handleProductClick(product.id)}
             >
               <div className="relative">
@@ -78,32 +78,32 @@ export default function FeaturedProducts() {
               
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold text-white">{product.name}</h3>
+                  <h3 className="text-xl font-semibold text-dark">{product.name}</h3>
                   <div className="flex items-center">
                     <Star className="h-5 w-5 text-yellow-500 fill-current" />
-                    <span className="ml-1 text-gray-400">{product.rating}</span>
+                    <span className="ml-1 text-dark">{product.rating}</span>
                   </div>
                 </div>
                 
                 <div className="space-y-2 mb-6">
-                  <div className="flex items-center text-gray-400">
+                  <div className="flex items-center text-dark">
                     <Cpu className="h-4 w-4 mr-2" />
                     <span className="text-sm">{product.specs.cpu}</span>
                   </div>
-                  <div className="flex items-center text-gray-400">
+                  <div className="flex items-center text-dark">
                     <MemoryStick className="h-4 w-4 mr-2" />
                     <span className="text-sm">{product.specs.gpu}</span>
                   </div>
-                  <div className="flex items-center text-gray-400">
+                  <div className="flex items-center text-dark">
                     <HardDrive className="h-4 w-4 mr-2" />
                     <span className="text-sm">{product.specs.ram}</span>
                   </div>
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-lime-500">${product.price}</span>
+                  <span className="text-2xl font-bold text-dark">${product.price}</span>
                   <button 
-                    className="bg-lime-500 hover:bg-lime-600 text-white px-6 py-2 rounded-full text-sm font-medium transition-colors"
+                    className="bg-dark hover:bg-light text-white hover:text-dark cursor-pointer px-6 py-2 rounded-full text-sm font-medium transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleProductClick(product.id);
