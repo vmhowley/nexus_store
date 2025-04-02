@@ -64,7 +64,7 @@ export default function FeaturedProducts() {
   };
 
   return (
-    <div className="bg-dark pt-16">
+    <div className="bg-dark pt-16 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-light mb-4">
@@ -76,7 +76,7 @@ export default function FeaturedProducts() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:content-center  gap-8">
           {products.map((product) => (
             <div key={product.id} className="p-4">
               <div
@@ -88,12 +88,12 @@ export default function FeaturedProducts() {
                     <Slider {...sliderSettings}>
                       {product.images.map((image, index) => (
                         <div key={index}>
-                          <img src={image} alt={`${product.name} ${index}`} className="w-full h-56 object-center object-cover" />
+                          <img src={image} alt={`${product.name} ${index}`} className="w-full h-60 object-center object-fill" />
                         </div>
                       ))}
                     </Slider>
                   ) : (
-                    <img src={product.images[0]} alt={product.name} className="w-full h-56 object-center object-cover" />
+                    <img src={product.images[0]} alt={product.name} className="w-full h-60 object-center object-fill" />
                   )}
                   <button
                     className="absolute top-4 right-4 p-2 bg-gray-900/80 backdrop-blur-xs rounded-full hover:bg-gray-900"
@@ -105,7 +105,7 @@ export default function FeaturedProducts() {
 
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-xl font-semibold text-dark">
+                    <h3 className="text-lg line-clamp-3 font-bold text-dark">
                       {product.name}
                     </h3>
                     <div className="flex items-center">

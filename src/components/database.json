@@ -1,0 +1,25 @@
+{
+  "brand": "Lenovo",
+  "model": "Thinkpad T14 (Gen 1)",
+  "name": "Lenovo Thinkpad T14 (Gen 1) 14\" Laptop",
+  "description": "...", 
+  "features": [
+    "Fresh install and activated Windows 11...",
+    "Intel Quad Core i5 10th Generation...",
+    "16 GB DDR4 RAM | 512GB NVMe SSD",
+    "14\" 1080p Full HD screen | USB-C Thunderbolt 3 Port"
+  ],
+  "images": [
+    "https://m.media-amazon.com/images/I/81x7P1JQHAL._AC_SL1500_.jpg",
+    "https://m.media-amazon.com/images/I/81waggsa0sL._AC_SX466_.jpg"
+  ],
+  "price": 1500.00, 
+  "category": "Laptop",
+  "rating": 0, 
+  "specs": {
+    "cpu": "i5 10310U 1.7Ghz",
+    "disk": "512GB NVMe SSD",
+    "gpu": "Nvidia RTX 4090",
+    "ram": "16GB DDR4"
+  }
+}

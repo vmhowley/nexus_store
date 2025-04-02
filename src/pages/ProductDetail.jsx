@@ -100,6 +100,29 @@ export default function ProductDetail() {
             
             <p className="text-accent mb-8">{product.description}</p>
 
+            <div className="bg-light rounded-xl p-6 ">
+              <h3 className="text-xl font-bold text-dark mb-4">Specifications</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {Object.entries(product.specs).map(([key, value]) => (
+                  <div key={key} className="flex items-center text-dark">
+                    <span className="capitalize text-dark font-bold w-24">{key}:</span>
+                    <span>{value}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h3 className="text-xl font-bold text-dark mb-4">Key Features</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {product.features.map((feature, index) => (
+                  <div key={index} className="flex items-center text-gray-300">
+                    <Shield className="h-4 w-4 text-secondary mr-2" />
+                    <span>{feature}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
             <div className="flex items-center justify-between bg-light rounded-xl p-6 mb-8">
               <div>
                 <span className="text-dark">Price</span>
