@@ -22,25 +22,25 @@ export default function Navbar() {
   const isActive = (path) => {
     return location.pathname === path
       ? "text-lime-500"
-      : "text-gray-300 hover:text-lime-500";
+      : "text-black font-semibold hover:text-primary hover:underline";
   };
 
   return (
-    <nav className="bg-gray-900 fixed w-full top-0 z-50 border-b border-lime-500/20">
+    <nav className="bg-gray-100   fixed w-full top-0 z-50 border-b border-gray-200  shadow-xl ">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-20 items-center">
           <Link to="/" className="flex items-center space-x-2">
-            <Cpu className="h-10 w-10 text-lime-500" />
+            <Cpu className="h-10 w-10 text-secundary" />
             <div className="flex flex-col">
-              <span className="text-2xl font-bold text-white">
+              <span className="text-2xl font-bold text-gray-800">
                 NE
-                <span className="text-lime-500 font-extrabold">
+                <span className="text-secundary font-extrabold">
                 X
                 </span>
                 US
 
               </span>
-              <span className="text-xs text-gray-400">COMPUTING SOLUTIONS</span>
+              <span className="text-xs text-black">COMPUTING SOLUTIONS</span>
             </div>
           </Link>
 

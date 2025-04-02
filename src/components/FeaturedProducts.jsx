@@ -29,7 +29,7 @@ export default function FeaturedProducts() {
 
   if (loading) {
     return (
-      <div className="bg-gray-900 py-24">
+      <div className="bg-gray-200 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-lime-500 mx-auto"></div>
@@ -52,10 +52,10 @@ export default function FeaturedProducts() {
   }
 
   return (
-    <div className="bg-gray-900 py-24">
+    <div className="bg-gray-200 py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-white mb-4">Featured Builds</h2>
+          <h2 className="text-4xl font-bold text-black mb-4">Featured Builds</h2>
           <p className="text-gray-400 max-w-2xl mx-auto">Experience computing excellence with our carefully curated selection of premium pre-built systems.</p>
         </div>
         
@@ -63,7 +63,7 @@ export default function FeaturedProducts() {
           {products.map((product) => (
             <div 
               key={product.id} 
-              className="bg-gray-800 rounded-2xl overflow-hidden border border-lime-500/20 hover:border-lime-500/40 transition-all cursor-pointer transform hover:scale-[1.02] hover:shadow-xl hover:shadow-lime-500/10"
+              className="bg-gray-600 shadow-md rounded-2xl overflow-hidden border border-lime-500/20 hover:border-lime-500/40 transition-all cursor-pointer transform hover:scale-[1.02] hover:shadow-xl hover:shadow-lime-500/10"
               onClick={() => handleProductClick(product.id)}
             >
               <div className="relative">

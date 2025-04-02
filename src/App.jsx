@@ -19,7 +19,7 @@ function App() {
     <FirebaseProvider>
       <Router>
         <ScrollToTop/>
-        <div className="min-h-screen bg-gray-900">
+        <div className="min-h-screen bg-white">
           <Navbar />
           <Routes>
             <Route path="/login" element={<Login />} />
