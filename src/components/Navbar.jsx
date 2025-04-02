@@ -31,7 +31,22 @@ export default function Navbar() {
         <div className="flex justify-between h-20 items-center">
           <Link to="/" className="flex items-center space-x-2">
             <Cpu className="size-10 text-primary" />
-            <span className="text-white text-xl font-bold">NEXUS</span>
+            <div className="flex flex-col  ">
+
+<svg width="200" height="150" viewBox="40 -4 350 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+  
+  <text x="50" y="80" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="white">NE</text>
+  
+  <g transform="translate(120,40)">
+      <path d="M10 0 L50 40" stroke="#2EAF7D" stroke-width="10" stroke-linecap="round"/>
+      <path d="M50 0 L10 40" stroke="#2EAF7D" stroke-width="10" stroke-linecap="round"/>
+  </g>
+  
+  <text x="180" y="80" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="white">US</text>
+  
+  <text x="75" y="110" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="white" letter-spacing="2">NEXT-GEN COMPUTING</text>
+</svg>
+          </div>
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
