@@ -27,12 +27,9 @@ export default function ProductDetail() {
   }, [id, getProduct]);
 
   const handleAddToCart = async () => {
-    if (!auth.currentUser) {
-      alert('Please sign in to add items to cart');
-      return;
-    }
     try {
-      await addToCart(auth.currentUser.uid, id);
+      const userId = auth.currentUser ? auth.currentUser.uid : null;
+      await addToCart(userId, id);
       alert('Added to cart!');
     } catch (error) {
       console.error('Error adding to cart:', error);
@@ -57,7 +54,7 @@ export default function ProductDetail() {
   if (loading) {
     return (
       <div className="pt-20 min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-purple-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-lime-500"></div>
       </div>
     );
   }
@@ -71,7 +68,7 @@ export default function ProductDetail() {
   }
 
   return (
-    <div className="pt-20 bg-gray-900 min-h-screen">
+    <div className="pt-20 bg-gray-200 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="relative">
@@ -81,10 +78,10 @@ export default function ProductDetail() {
               className="w-full rounded-2xl shadow-2xl"
             />
             <button 
-              className="absolute top-4 right-4 p-3 bg-gray-900/80 backdrop-blur-sm rounded-full hover:bg-gray-900"
+              className="absolute top-4 right-4 p-3 bg-gray-900/80 backdrop-blur-xs rounded-full hover:bg-gray-900"
               onClick={handleAddToWishlist}
             >
-              <Heart className="h-6 w-6 text-purple-500" />
+              <Heart className="h-6 w-6 text-lime-500" />
             </button>
           </div>
 
@@ -118,7 +115,7 @@ export default function ProductDetail() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {product.features.map((feature, index) => (
                   <div key={index} className="flex items-center text-gray-300">
-                    <Shield className="h-4 w-4 text-purple-500 mr-2" />
+                    <Shield className="h-4 w-4 text-lime-500 mr-2" />
                     <span>{feature}</span>
                   </div>
                 ))}
@@ -131,7 +128,7 @@ export default function ProductDetail() {
                 <div className="text-3xl font-bold text-white">${product.price}</div>
               </div>
               <button 
-                className="bg-purple-500 hover:bg-purple-600 text-white px-8 py-3 rounded-full text-lg font-medium transition-colors"
+                className="bg-lime-500 hover:bg-lime-600 text-white px-8 py-3 rounded-full text-lg font-medium transition-colors"
                 onClick={handleAddToCart}
               >
                 Add to Cart
@@ -140,11 +137,11 @@ export default function ProductDetail() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center text-gray-400">
-                <Clock className="h-5 w-5 mr-2 text-purple-500" />
+                <Clock className="h-5 w-5 mr-2 text-lime-500" />
                 <span>Ships in 3-5 days</span>
               </div>
               <div className="flex items-center text-gray-400">
-                <Truck className="h-5 w-5 mr-2 text-purple-500" />
+                <Truck className="h-5 w-5 mr-2 text-lime-500" />
                 <span>Free shipping</span>
               </div>
             </div>
