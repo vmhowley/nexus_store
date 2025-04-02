@@ -10,6 +10,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Support from './pages/Support';
 import ProductDetail from './pages/ProductDetail';
+import Cart from './pages/Cart';
 import ScrollToTop from "./ScrollToTop";
 
 function App() {
@@ -24,6 +25,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/cart" element={<Cart />} />
             <Route path="/discover" element={<Discover />} />
             <Route path="/products" element={<Products />} />
             <Route path="/enterprise" element={<Enterprise />} />

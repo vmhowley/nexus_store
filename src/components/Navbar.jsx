@@ -9,15 +9,14 @@ export default function Navbar() {
   const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
-    if (user) {
-      const fetchCartCount = async () => {
+    const updateCartCount = async () => {
+      if (user) {
         const count = await getCartCount(user.uid);
         setCartCount(count);
-      };
-      fetchCartCount();
-    } else {
-      setCartCount(0);
-    }
+      }
+    };
+
+    updateCartCount();
   }, [user]);
 
   const isActive = (path) => {

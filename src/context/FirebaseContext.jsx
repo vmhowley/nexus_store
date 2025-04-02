@@ -45,26 +45,79 @@ export function FirebaseProvider({ children }) {
       setLoading(false);
     }
   };
+  const getCart = async (userId) => {
+    try {
+      const cartRef = collection(db, "carts");
+      const q = query(cartRef, where("userId", "==", userId));
+      const querySnapshot = await getDocs(q);
+  
+      return querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (err) {
+      console.error("Error obteniendo el carrito:", err);
+      return [];
+    }
+  };
+  
+  const updateCartItem = async (cartItemId, newQuantity) => {
+    try {
+      const cartItemRef = doc(db, "carts", cartItemId);
+      await updateDoc(cartItemRef, { quantity: newQuantity });
+    } catch (err) {
+      console.error("Error actualizando el producto en el carrito:", err);
+    }
+  };
+  
+  const removeFromCart = async (cartItemId) => {
+    try {
+      await deleteDoc(doc(db, "carts", cartItemId));
+      console.log("Producto eliminado del carrito:", cartItemId);
+      window.location.reload(); // Recargar la página para reflejar los cambios
 
+      if (user) {
+        const count = await getCartCount(user.uid);  // Actualiza el count del carrito
+        setCartCount(count);
+        window.location.reload(); // Recargar la página para reflejar los cambios
+      }
+    } catch (err) {
+      console.error("Error eliminando el producto del carrito:", err);
+    }
+  };
+
+  const clearCart = async (userId) => {
+    try {
+      const cartRef = collection(db, "carts");
+      const q = query(cartRef, where("userId", "==", userId));
+      const querySnapshot = await getDocs(q);
+  
+      querySnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+    } catch (err) {
+      console.error("Error al limpiar el carrito:", err);
+    }
+  };
 
   // Obtener la cantidad total de productos en el carrito
-const getCartCount = async (userId) => {
-  try {
-    const cartRef = collection(db, "carts");
-    const q = query(cartRef, where("userId", "==", userId));
-    const querySnapshot = await getDocs(q);
-
-    let totalCount = 0;
-    querySnapshot.forEach((doc) => {
-      totalCount += doc.data().quantity; // Sumar la cantidad de cada producto
-    });
-
-    return totalCount;
-  } catch (err) {
-    console.error("Error al obtener el carrito:", err);
-    return 0;
-  }
-};
+  const getCartCount = async (userId) => {
+    try {
+      const cartRef = collection(db, "carts");
+      const q = query(cartRef, where("userId", "==", userId));
+      const querySnapshot = await getDocs(q);
+  
+      let totalCount = 0;
+      querySnapshot.forEach((doc) => {
+        totalCount += doc.data().quantity; // Sumar la cantidad de cada producto
+      });
+  
+      return totalCount;
+    } catch (err) {
+      console.error("Error al obtener el carrito:", err);
+      return 0;
+    }
+  };
 
   // Get a single product
   const getProduct = async (id) => {
@@ -127,11 +180,15 @@ const getCartCount = async (userId) => {
   
         if (querySnapshot.empty) {
           await addDoc(cartRef, { userId, productId, quantity });
+          window.location.reload(); // Recargar la página para reflejar los cambios
+
         } else {
           const cartItem = querySnapshot.docs[0];
           await updateDoc(doc(db, 'carts', cartItem.id), {
             quantity: cartItem.data().quantity + quantity
           });
+          window.location.reload(); // Recargar la página para reflejar los cambios
+
         }
       } else {
         // Usuario NO autenticado: Guardar en localStorage
@@ -180,6 +237,10 @@ const getCartCount = async (userId) => {
     getProduct,
     getCartCount,
     addToCart,
+    getCart,
+  updateCartItem,
+  removeFromCart,
+    clearCart,
     addToWishlist,
     fetchProducts
   };
