@@ -69,7 +69,7 @@ export default function FeaturedProducts() {
               <div className="relative">
                 <img src={product.image} alt={product.name} className="w-full h-56 object-cover" />
                 <button 
-                  className="absolute top-4 right-4 p-2 bg-gray-900/80 backdrop-blur-sm rounded-full hover:bg-gray-900"
+                  className="absolute top-4 right-4 p-2 bg-gray-900/80 backdrop-blur-xs rounded-full hover:bg-gray-900"
                   onClick={(e) => handleWishlist(e, product.id)}
                 >
                   <Heart className="h-5 w-5 text-lime-500" />

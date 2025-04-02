@@ -5,14 +5,14 @@ export default function Hero() {
   return (
     <div className="relative bg-lime-900 min-h-screen flex items-center overflow-hidden">
       <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2072')] bg-cover bg-center opacity-10"></div>
-      <div className="absolute inset-0 bg-gradient-to-br from-red-900/50 to-transparent"></div>
+      <div className="absolute inset-0 bg-linear-to-br from-red-900/50 to-transparent"></div>
       
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <h1 className="text-5xl lg:text-7xl font-bold">
               <span className="text-white">Next-Gen</span>
-              <span className="block mt-2 bg-gradient-to-r from-lime-500 to-yellow-500 bg-clip-text text-transparent">Computing</span>
+              <span className="block mt-2 bg-linear-to-r from-lime-500 to-yellow-500 bg-clip-text text-transparent">Computing</span>
             </h1>
             <p className="mt-6 text-gray-300 text-lg leading-relaxed">
               Experience unparalleled performance with our cutting-edge workstations and gaming rigs. Built for professionals, designed for excellence.
@@ -34,7 +34,7 @@ export default function Hero() {
               alt="Premium Gaming PC"
               className="rounded-2xl shadow-2xl shadow-lime-500/20 hover:shadow-lime-500/30 transition-shadow"
             />
-            <div className="absolute -bottom-4 left-4 right-4 bg-gray-800/80 backdrop-blur-sm rounded-xl p-4 border border-lime-500/20">
+            <div className="absolute -bottom-4 left-4 right-4 bg-gray-800/80 backdrop-blur-xs rounded-xl p-4 border border-lime-500/20">
               <div className="flex justify-between items-center">
                 <div>
                   <h3 className="text-white font-semibold">NEXUS TITAN PRO</h3>

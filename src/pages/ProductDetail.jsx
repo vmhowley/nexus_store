@@ -78,7 +78,7 @@ export default function ProductDetail() {
               className="w-full rounded-2xl shadow-2xl"
             />
             <button 
-              className="absolute top-4 right-4 p-3 bg-gray-900/80 backdrop-blur-sm rounded-full hover:bg-gray-900"
+              className="absolute top-4 right-4 p-3 bg-gray-900/80 backdrop-blur-xs rounded-full hover:bg-gray-900"
               onClick={handleAddToWishlist}
             >
               <Heart className="h-6 w-6 text-lime-500" />

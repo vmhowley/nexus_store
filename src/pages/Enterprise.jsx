@@ -44,7 +44,7 @@ export default function Enterprise() {
           })}
         </div>
 
-        <div className="bg-gradient-to-r from-lime-900/50 to-pink-900/50 rounded-2xl p-12 text-center">
+        <div className="bg-linear-to-r from-lime-900/50 to-pink-900/50 rounded-2xl p-12 text-center">
           <h2 className="text-3xl font-bold text-white mb-6">Ready to Scale Your Business?</h2>
           <p className="text-gray-300 max-w-2xl mx-auto mb-8">
             Let our enterprise team help you design the perfect solution for your organization's needs.

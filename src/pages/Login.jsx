@@ -26,7 +26,7 @@ const Login = () => {
   <div className="grid gap-8">
     <section
       id="back-div"
-      className="bg-gradient-to-r border rounded-3xl"
+      className="bg-linear-to-r border rounded-3xl"
     >
       <div
         className="border-8 border-transparent rounded-xl bg-white dark:bg-gray-900 shadow-xl p-8 m-2"
@@ -60,7 +60,7 @@ const Login = () => {
             >Forget your password?</a
           >
           <button
-            className="w-full p-3 mt-4 text-white bg-gradient-to-r from-lime-500 to-lime-400 rounded-lg hover:scale-105 transition transform duration-300 shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full p-3 mt-4 text-white bg-linear-to-r from-lime-500 to-lime-400 rounded-lg hover:scale-105 transition transform duration-300 shadow-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500"
             type="submit"
           >
             LOG IN

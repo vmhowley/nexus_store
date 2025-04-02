@@ -57,9 +57,9 @@ const Cart = () => {
                 <img
                   src={item.image}
                   alt={item.name}
-                  className="w-24 h-24 object-cover rounded"
+                  className="w-24 h-24 object-cover rounded-sm"
                 />
-                <div className="flex-grow">
+                <div className="grow">
                   <h3 className="text-lg font-semibold">{item.name}</h3>
                   <p className="text-[#7fba00] font-bold">${item.price}</p>
                 </div>
