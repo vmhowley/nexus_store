@@ -41,7 +41,7 @@ const Cart = () => {
   const total = subtotal + tax;
 
   return (
-    <div className="pt-20 bg-gray-900 min-h-screen">
+    <div className="pt-20 bg-dark min-h-screen">
       {cartItems.length === 0 ? (
         <div className="text-center py-12">
           <p className="text-xl text-gray-400">Your cart is empty</p>
@@ -52,7 +52,7 @@ const Cart = () => {
             {cartItems.map((item) => (
               <div
                 key={item.id}
-                className="bg-[#1e2430] rounded-lg p-4 mb-4 flex items-center gap-4"
+                className="bg-light rounded-lg p-4 mb-4 flex items-center gap-4"
               >
                 <img
                   src={item.image}
@@ -60,20 +60,20 @@ const Cart = () => {
                   className="w-24 h-24 object-cover rounded-sm"
                 />
                 <div className="grow">
-                  <h3 className="text-lg font-semibold">{item.name}</h3>
-                  <p className="text-[#7fba00] font-bold">${item.price}</p>
+                  <h3 className="text-lg text-dark font-semibold">{item.name}</h3>
+                  <p className="text-dark font-bold">${item.price}</p>
                 </div>
                 <div className="flex items-center gap-3">
                   <button
                     onClick={() => updateQuantity(item.id, -1)}
-                    className="p-1 hover:text-[#7fba00]"
+                    className="p-1 text-dark hover:text-secondary"
                   >
                     <Minus className="w-5 h-5" />
                   </button>
-                  <span className="w-8 text-center">{item.quantity}</span>
+                  <span className="w-8 text-center  text-dark hover:text-secondary">{item.quantity}</span>
                   <button
                     onClick={() => updateQuantity(item.id, 1)}
-                    className="p-1 hover:text-[#7fba00]"
+                    className="p-1  text-dark hover:text-secondary"
                   >
                     <Plus className="w-5 h-5" />
                   </button>
@@ -94,9 +94,9 @@ const Cart = () => {
               </div>
             ))}
           </div>
-          <div className="bg-[#1e2430] rounded-lg p-6 h-fit">
-            <h2 className="text-xl font-bold mb-4">Order Summary</h2>
-            <div className="space-y-3 text-gray-300">
+          <div className="bg-light rounded-lg p-6 h-fit">
+            <h2 className="text-xl font-bold mb-4 text-dark">Order Summary</h2>
+            <div className="space-y-3 text-dark">
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span>${subtotal.toFixed(2)}</span>
@@ -105,12 +105,12 @@ const Cart = () => {
                 <span>Tax (21%)</span>
                 <span>${tax.toFixed(2)}</span>
               </div>
-              <div className="border-t border-gray-600 pt-3 flex justify-between font-bold text-white">
+              <div className="border-t border-gray-600 pt-3 flex justify-between font-bold text-dark">
                 <span>Total</span>
                 <span>${total.toFixed(2)}</span>
               </div>
             </div>
-            <button className="w-full bg-[#7fba00] text-white py-3 rounded-lg mt-6 font-semibold hover:bg-[#6ca000] transition-colors">
+            <button className="w-full bg-primary text-dark hover:text-light py-3 rounded-lg mt-6 font-semibold hover:bg-secondary  transition-colors">
               Proceed to Checkout
             </button>
           </div>

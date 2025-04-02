@@ -34,8 +34,8 @@ export default function Features() {
             const Icon = feature.icon;
             return (
               <div key={index} className="bg-dark/50 backdrop-blur-lg rounded-2xl p-8 border border-light/20">
-                <div className="inline-flex p-3 rounded-lg bg-lime-500/10 mb-6">
-                  <Icon className="h-7 w-7 text-lime-500" />
+                <div className="inline-flex p-3 rounded-lg bg-secondary/10 mb-6">
+                  <Icon className="h-7 w-7 text-primary" />
                 </div>
                 <h3 className="text-xl font-bold text-white mb-3">{feature.title}</h3>
                 <p className="text-gray-400">{feature.description}</p>

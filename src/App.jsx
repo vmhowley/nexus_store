@@ -32,7 +32,7 @@ function App() {
             <Route path="/support" element={<Support />} />
             <Route path="/product/:id" element={<ProductDetail />} />
           </Routes>
-          <footer className="bg-gray-900 text-gray-400 py-12 border-t border-lime-500/20">
+          <footer className="bg-dark text-accent py-12 border-t border-lime-500/20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
               <p>&copy; 2025 NEXUS Computing Solutions. All rights reserved.</p>
             </div>
