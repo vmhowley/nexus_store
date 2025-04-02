@@ -32,7 +32,7 @@ export default function FeaturedProducts() {
       <div className="bg-gray-900 py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-purple-500 mx-auto"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-lime-500 mx-auto"></div>
           </div>
         </div>
       </div>
@@ -63,7 +63,7 @@ export default function FeaturedProducts() {
           {products.map((product) => (
             <div 
               key={product.id} 
-              className="bg-gray-800 rounded-2xl overflow-hidden border border-purple-500/20 hover:border-purple-500/40 transition-all cursor-pointer transform hover:scale-[1.02] hover:shadow-xl hover:shadow-purple-500/10"
+              className="bg-gray-800 rounded-2xl overflow-hidden border border-lime-500/20 hover:border-lime-500/40 transition-all cursor-pointer transform hover:scale-[1.02] hover:shadow-xl hover:shadow-lime-500/10"
               onClick={() => handleProductClick(product.id)}
             >
               <div className="relative">
@@ -72,7 +72,7 @@ export default function FeaturedProducts() {
                   className="absolute top-4 right-4 p-2 bg-gray-900/80 backdrop-blur-sm rounded-full hover:bg-gray-900"
                   onClick={(e) => handleWishlist(e, product.id)}
                 >
-                  <Heart className="h-5 w-5 text-purple-500" />
+                  <Heart className="h-5 w-5 text-lime-500" />
                 </button>
               </div>
               
@@ -101,9 +101,9 @@ export default function FeaturedProducts() {
                 </div>
                 
                 <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-purple-500">${product.price}</span>
+                  <span className="text-2xl font-bold text-lime-500">${product.price}</span>
                   <button 
-                    className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-full text-sm font-medium transition-colors"
+                    className="bg-lime-500 hover:bg-lime-600 text-white px-6 py-2 rounded-full text-sm font-medium transition-colors"
                     onClick={(e) => {
                       e.stopPropagation();
                       handleProductClick(product.id);
