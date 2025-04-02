@@ -5,7 +5,7 @@ export default function Hero() {
   return (
     <div className="relative bg-dark min-h-screen flex items-center overflow-hidden">
       <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&q=80&w=2072')] bg-cover bg-center opacity-10"></div>
-      <div className="absolute inset-0 bg-linear-to-br from-secodary/50 to-transparent"></div>
+      <div className="absolute inset-0 bg-linear-to-br from-primary/50 to-transparent"></div>
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -16,7 +16,7 @@ export default function Hero() {
                 Computing
               </span>
             </h1>
-            <p className="mt-6 text-dark text-lg leading-relaxed">
+            <p className="mt-6 text-accent text-lg leading-relaxed">
               Experience unparalleled performance with our cutting-edge
               workstations and gaming rigs. Built for professionals, designed
               for excellence.
