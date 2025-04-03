@@ -166,48 +166,70 @@ const getCartCount = async (userId) => {
   };
 
     // Agregar producto al carrito y actualizar el badge sin recargar
-    const addToCart = async (userId, productId, selectedConfig, quantity = 1) => {
+    const addToCart = async (userId, productId, selectedConfig, price, quantity = 1) => {
       try {
         if (userId) {
           const cartRef = collection(db, 'carts');
           const q = query(
             cartRef,
             where('userId', '==', userId),
-            where('productId', '==', productId),
-            where('config', '==', selectedConfig) // Filtra por configuración
+            where('productId', '==', productId)
           );
           const querySnapshot = await getDocs(q);
     
-          if (querySnapshot.empty) {
-            await addDoc(cartRef, { userId, productId, config: selectedConfig, quantity });
+          let existingCartItem = null;
+    
+          // Buscar si ya existe con la misma configuración
+          querySnapshot.forEach((doc) => {
+            const itemData = doc.data();
+            if (JSON.stringify(itemData.config) === JSON.stringify(selectedConfig)) {
+              existingCartItem = { id: doc.id, ...itemData };
+            }
+          });
+    
+          if (existingCartItem) {
+            // Si ya existe con la misma configuración, actualizar la cantidad
+            await updateDoc(doc(db, 'carts', existingCartItem.id), {
+              quantity: existingCartItem.quantity + quantity
+            });
           } else {
-            const cartItem = querySnapshot.docs[0];
-            await updateDoc(doc(db, 'carts', cartItem.id), {
-              quantity: cartItem.data().quantity + quantity
+            // Si no existe, agregarlo con el precio correcto
+            await addDoc(cartRef, {
+              userId,
+              productId,
+              config: selectedConfig,
+              quantity,
+              price // Guardar el precio correcto según la configuración
             });
           }
     
-          // Actualiza el contador del carrito
-          const count = await getCartCount(userId);
-          setCartCount(count);
+          // 🔄 Actualizar el estado del carrito inmediatamente sin recargar
+          setCartCount(prevCount => prevCount + quantity);
         } else {
-          // Si el usuario no está autenticado, guardar en localStorage
+          // 🔴 Manejo del carrito cuando el usuario NO está autenticado
           const cart = JSON.parse(localStorage.getItem("cart")) || [];
-          const itemIndex = cart.findIndex(item => item.productId === productId && item.config === selectedConfig);
+          const itemIndex = cart.findIndex(
+            item => item.productId === productId && JSON.stringify(item.config) === JSON.stringify(selectedConfig)
+          );
     
           if (itemIndex !== -1) {
             cart[itemIndex].quantity += quantity;
           } else {
-            cart.push({ productId, config: selectedConfig, quantity });
+            cart.push({ productId, config: selectedConfig, quantity, price });
           }
     
           localStorage.setItem("cart", JSON.stringify(cart));
+          
+          // 🔄 Actualizar el badge del carrito en tiempo real
           setCartCount(cart.reduce((acc, item) => acc + item.quantity, 0));
         }
       } catch (err) {
         console.error("Error al agregar al carrito:", err);
       }
     };
+    
+    
+    
  // Eliminar producto del carrito y actualizar el badge sin recargar
  const removeFromCart = async (cartItemId) => {
   try {

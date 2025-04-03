@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Menu, Search, ShoppingCart, Cpu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useFirebase } from "../context/FirebaseContext";
-import { useCart } from "../context/CartContext";
+import { useCart } from "../context/CartProvider";
 
 export default function Navbar() {
   const location = useLocation();

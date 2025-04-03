@@ -32,12 +32,8 @@ export default function FeaturedProducts() {
 
   if (loading) {
     return (
-      <div className="bg-dark py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-lime-500 mx-auto"></div>
-          </div>
-        </div>
+      <div className="pt-20 min-h-screen bg-dark flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-purple-500"></div>
       </div>
     );
   }

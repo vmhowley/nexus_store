@@ -14,7 +14,7 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Cart1 from './pages/Cart1';
 import ScrollToTop from "./ScrollToTop";
-import { CartProvider } from './context/CartContext';
+import { CartProvider } from './context/CartProvider';
 
 function App() {
   return (

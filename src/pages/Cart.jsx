@@ -9,6 +9,7 @@ export default function Cart() {
   const navigate = useNavigate();
   const { getCart, updateCartItem, removeFromCart, getProduct } = useFirebase();
   const [cartItems, setCartItems] = useState([]);
+  const [cartDat, setCartDat] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -27,6 +28,7 @@ export default function Cart() {
         })
       );
       setCartItems(detailedCart);
+      setCartDat(cartData);
       setLoading(false);
     } catch (err) {
       setError(err.message);
@@ -66,12 +68,14 @@ export default function Cart() {
     }
   };
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+  const subtotal = cartDat.reduce(
+    (sum, item) => sum + item.price * item.quantity, // Usa el precio correcto almacenado
     0
   );
-  const tax = subtotal * 0.21;
-  const total = subtotal + tax;
+  
+  const tax = subtotal * 0.03;
+  const total = subtotal * cartDat[0]?.quantity + tax;
+ ;
 
   if (loading) {
     return (
@@ -137,61 +141,37 @@ export default function Cart() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <div className="space-y-4">
-              {cartItems.map((item, index) => (
-                <div
-                  key={index}
-                  className="bg-light rounded-xl p-6 border border-accent/20"
-                >
-                  <div className="flex items-center gap-6">
-                    <img
-                      src={item.images[0]}
-                      alt={item.name}
-                      className="w-24 h-24 object-cover rounded-lg"
-                    />
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-dark mb-1">
-                        {item.name}
-                      </h3>
-                      <p className="text-dark text-xs">
-                        Configuración:
-                        <div className="grid gap-2">
-                          {item.config.processors.name}
-                          {item.config.graphicsCard.name}
-                        
-                        </div>
-                      </p>{" "}
-                      {/* Muestra la configuración seleccionada */}
-                      <p className="text-dark text-sm mb-2">${item.price}</p>
-                      <div className="flex items-center gap-4">
-                        <button
-                          onClick={() => updateQuantity(item.cartId, -1)}
-                          className="text-dark hover:text-purple-500 transition-colors"
-                        >
-                          <MinusCircle className="h-5 w-5" />
-                        </button>
-                        <span className="text-dark">{item.quantity}</span>
-                        <button
-                          onClick={() => updateQuantity(item.cartId, 1)}
-                          className="text-dark hover:text-purple-500 transition-colors"
-                        >
-                          <PlusCircle className="h-5 w-5" />
-                        </button>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-xl font-bold text-dark mb-2">
-                        ${(item.price * item.quantity).toFixed(2)}
-                      </p>
-                      <button
-                        onClick={() => handleRemoveItem(item.cartId)}
-                        className="text-red-500 hover:text-red-600 transition-colors"
-                      >
-                        <Trash2 className="h-5 w-5" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+            {cartItems.map((item) => (
+  <div key={item.id} className="bg-light rounded-xl p-6 border border-accent/20">
+    <div className="flex items-center gap-6">
+      <img 
+        src={item.images[0]} 
+        alt={item.name} 
+        className="w-24 h-24 object-cover rounded-lg"
+      />
+      <div className="flex-1">
+        <h3 className="text-lg font-semibold text-dark mb-1">{item.name}</h3>
+        <p className="text-dark text-sm mb-2">${subtotal}</p>
+
+        <div className="flex items-center gap-4">
+          <button onClick={() => updateQuantity(item.cartId, -1)} className="text-dark hover:text-purple-500 transition-colors">
+            <MinusCircle className="h-5 w-5" />
+          </button>
+          <span className="text-dark">{item.quantity}</span>
+          <button onClick={() => updateQuantity(item.cartId, 1)} className="text-dark hover:text-purple-500 transition-colors">
+            <PlusCircle className="h-5 w-5" />
+          </button>
+        </div>
+      </div>
+      <div className="text-right">
+        <p className="text-xl font-bold text-dark mb-2">${(subtotal * item.quantity).toFixed(2)}</p>
+        <button onClick={() => handleRemoveItem(item.cartId)} className="text-red-500 hover:text-red-600 transition-colors">
+          <Trash2 className="h-5 w-5" />
+        </button>
+      </div>
+    </div>
+  </div>
+          ))}
             </div>
           </div>
 
@@ -204,10 +184,10 @@ export default function Cart() {
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-dark">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>${(subtotal * cartItems.length).toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-dark">
-                  <span>Tax (21%)</span>
+                  <span>Tax (3%)</span>
                   <span>${tax.toFixed(2)}</span>
                 </div>
                 <div className="border-t border-gray-700 pt-4 flex justify-between text-dark">
