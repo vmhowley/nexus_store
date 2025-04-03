@@ -7,10 +7,12 @@ import Discover from './pages/Discover';
 import Products from './pages/Products';
 import Enterprise from './pages/Enterprise';
 import Login from './pages/Login';
+import Login1 from './pages/Login1';
 import Register from './pages/Register';
 import Support from './pages/Support';
 import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
+import Cart1 from './pages/Cart1';
 import ScrollToTop from "./ScrollToTop";
 
 function App() {
@@ -23,9 +25,11 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/login1" element={<Login1 />} />
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/cart" element={<Cart />} />
+            <Route path="/cart1" element={<Cart1 />} />
             <Route path="/discover" element={<Discover />} />
             <Route path="/products" element={<Products />} />
             <Route path="/enterprise" element={<Enterprise />} />
