@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { Menu, Search, ShoppingCart, Cpu, X } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useFirebase } from "../context/FirebaseContext";
+import { useCart } from "../context/CartContext";
 
 export default function Navbar() {
   const location = useLocation();
-  const { user, getCartCount } = useFirebase();
-  const [cartCount, setCartCount] = useState(0);
+  const { cartCount } = useFirebase();
+  const { user, getCartCount, setCartCount } = useFirebase();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -74,7 +75,7 @@ export default function Navbar() {
                 <ShoppingCart className="h-6 w-6 text-gray-400 hover:text-accent cursor-pointer transition-colors" />
                 {cartCount > 0 && (
                   <span className="absolute -top-2 -right-2 bg-light text-dark text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartCount}
+                    { cartCount } 
                   </span>
                 )}
               </Link>

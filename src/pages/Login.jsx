@@ -4,7 +4,7 @@ import { Lock, Mail, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
 import { auth } from '../firebase/config';
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
-export default function Login1() {
+export default function Login() {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
@@ -33,21 +33,21 @@ export default function Login1() {
   };
 
   return (
-    <div className="pt-20 min-h-screen bg-gray-900 flex items-center justify-center px-4">
+    <div className="pt-20 min-h-screen bg-dark flex items-center justify-center px-4">
       <div className="max-w-md w-full">
-        <div className="bg-gray-800 rounded-2xl p-8 border border-purple-500/20">
+        <div className="bg-light rounded-2xl p-8 border border-secondary/20">
           <div className="text-center mb-8">
-            <div className="inline-flex p-4 rounded-full bg-purple-500/10 mb-4">
+            <div className="inline-flex p-4 rounded-full bg-secondary/10 mb-4">
               {isLogin ? (
-                <LogIn className="h-8 w-8 text-purple-500" />
+                <LogIn className="h-8 w-8 text-primary" />
               ) : (
-                <UserPlus className="h-8 w-8 text-purple-500" />
+                <UserPlus className="h-8 w-8 text-primary" />
               )}
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">
+            <h1 className="text-2xl font-bold text-dark mb-2">
               {isLogin ? 'Welcome Back' : 'Create Account'}
             </h1>
-            <p className="text-gray-400">
+            <p className="text-dark">
               {isLogin
                 ? 'Sign in to access your account'
                 : 'Sign up to start shopping'}
@@ -62,7 +62,7 @@ export default function Login1() {
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-2">
+              <label htmlFor="email" className="block text-sm font-medium text-dark mb-2">
                 Email Address
               </label>
               <div className="relative">
@@ -71,7 +71,7 @@ export default function Login1() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg py-3 px-4 pl-11 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full bg-dark border border-gray-700 rounded-lg py-3 px-4 pl-11 text-white placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
                   placeholder="Enter your email"
                   required
                 />
@@ -80,7 +80,7 @@ export default function Login1() {
             </div>
 
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-400 mb-2">
+              <label htmlFor="password" className="block text-sm font-medium text-dark mb-2">
                 Password
               </label>
               <div className="relative">
@@ -89,7 +89,7 @@ export default function Login1() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg py-3 px-4 pl-11 pr-11 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full bg-dark border border-gray-700 rounded-lg py-3 px-4 pl-11 pr-11 text-light placeholder-gray-500 focus:outline-none focus:border-primary transition-colors"
                   placeholder="Enter your password"
                   required
                 />
@@ -97,7 +97,7 @@ export default function Login1() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-3.5 text-gray-500 hover:text-gray-400 transition-colors"
+                  className="absolute right-4 top-3.5 text-gray-500 hover:text-dark transition-colors"
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5" />
@@ -111,11 +111,11 @@ export default function Login1() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full bg-primary hover:bg-secondary text-dark hover:text-light py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? (
                 <div className="flex items-center justify-center">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-accent"></div>
                 </div>
               ) : (
                 isLogin ? 'Sign In' : 'Create Account'
@@ -126,7 +126,7 @@ export default function Login1() {
           <div className="mt-6 text-center">
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-purple-500 hover:text-purple-400 text-sm transition-colors"
+              className="text-primary hover:text-accent text-sm transition-colors"
             >
               {isLogin
                 ? "Don't have an account? Sign Up"

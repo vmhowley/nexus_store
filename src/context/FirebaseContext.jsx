@@ -17,13 +17,17 @@ export function FirebaseProvider({ children }) {
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
   const auth = getAuth();
+  const [cartCount, setCartCount] = useState(0); // Nuevo estado para el badge
+
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
       if (currentUser) {
         console.log("User logged in:", currentUser.email);
-        syncCartAfterLogin(currentUser.uid);
+        await syncCartAfterLogin(currentUser.uid);
+        const count = await getCartCount(currentUser.uid);
+        setCartCount(count); // Actualiza el badge al iniciar sesión
       }
     });
     return () => unsubscribe();
@@ -61,30 +65,18 @@ export function FirebaseProvider({ children }) {
     }
   };
   
-  const updateCartItem = async (cartItemId, newQuantity) => {
+  const updateCartItem = async (userId,cartItemId, newQuantity) => {
     try {
       const cartItemRef = doc(db, "carts", cartItemId);
       await updateDoc(cartItemRef, { quantity: newQuantity });
+
     } catch (err) {
       console.error("Error actualizando el producto en el carrito:", err);
     }
+    const count = await getCartCount(userId);
+    setCartCount(count);
   };
-  
-  const removeFromCart = async (cartItemId) => {
-    try {
-      await deleteDoc(doc(db, "carts", cartItemId));
-      console.log("Producto eliminado del carrito:", cartItemId);
-      window.location.reload(); // Recargar la página para reflejar los cambios
 
-      if (user) {
-        const count = await getCartCount(user.uid);  // Actualiza el count del carrito
-        setCartCount(count);
-        window.location.reload(); // Recargar la página para reflejar los cambios
-      }
-    } catch (err) {
-      console.error("Error eliminando el producto del carrito:", err);
-    }
-  };
 
   const clearCart = async (userId) => {
     try {
@@ -100,24 +92,25 @@ export function FirebaseProvider({ children }) {
     }
   };
 
-  // Obtener la cantidad total de productos en el carrito
-  const getCartCount = async (userId) => {
-    try {
-      const cartRef = collection(db, "carts");
-      const q = query(cartRef, where("userId", "==", userId));
-      const querySnapshot = await getDocs(q);
-  
-      let totalCount = 0;
-      querySnapshot.forEach((doc) => {
-        totalCount += doc.data().quantity; // Sumar la cantidad de cada producto
-      });
-  
-      return totalCount;
-    } catch (err) {
-      console.error("Error al obtener el carrito:", err);
-      return 0;
-    }
-  };
+// Obtener la cantidad total de productos en el carrito
+const getCartCount = async (userId) => {
+  try {
+    const cartRef = collection(db, "carts");
+    const q = query(cartRef, where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+
+    let totalCount = 0;
+    querySnapshot.forEach((doc) => {
+      totalCount += doc.data().quantity;
+    });
+
+    return totalCount;
+  } catch (err) {
+    console.error("Error al obtener el carrito:", err);
+    return 0;
+  }
+};
+
 
   // Get a single product
   const getProduct = async (id) => {
@@ -161,53 +154,74 @@ export function FirebaseProvider({ children }) {
     }
   };
   
-  const syncCartAfterLogin = async (userId) => {
+   // Sincronizar carrito al iniciar sesión
+   const syncCartAfterLogin = async (userId) => {
     const localCart = JSON.parse(localStorage.getItem("cart")) || [];
     for (const item of localCart) {
       await addToCart(userId, item.productId, item.quantity);
     }
-    localStorage.removeItem("cart"); // Borrar el carrito local después de sincronizar
+    localStorage.removeItem("cart"); 
+    const count = await getCartCount(userId);
+    setCartCount(count);
   };
 
-  // Add a product to cart
-  const addToCart = async (userId, productId, quantity = 1) => {
-    try {
-      if (userId) {
-        // Usuario autenticado: Guardar en Firebase
-        const cartRef = collection(db, 'carts');
-        const q = query(cartRef, where('userId', '==', userId), where('productId', '==', productId));
-        const querySnapshot = await getDocs(q);
-  
-        if (querySnapshot.empty) {
-          await addDoc(cartRef, { userId, productId, quantity });
-          window.location.reload(); // Recargar la página para reflejar los cambios
-
+    // Agregar producto al carrito y actualizar el badge sin recargar
+    const addToCart = async (userId, productId, selectedConfig, quantity = 1) => {
+      try {
+        if (userId) {
+          const cartRef = collection(db, 'carts');
+          const q = query(
+            cartRef,
+            where('userId', '==', userId),
+            where('productId', '==', productId),
+            where('config', '==', selectedConfig) // Filtra por configuración
+          );
+          const querySnapshot = await getDocs(q);
+    
+          if (querySnapshot.empty) {
+            await addDoc(cartRef, { userId, productId, config: selectedConfig, quantity });
+          } else {
+            const cartItem = querySnapshot.docs[0];
+            await updateDoc(doc(db, 'carts', cartItem.id), {
+              quantity: cartItem.data().quantity + quantity
+            });
+          }
+    
+          // Actualiza el contador del carrito
+          const count = await getCartCount(userId);
+          setCartCount(count);
         } else {
-          const cartItem = querySnapshot.docs[0];
-          await updateDoc(doc(db, 'carts', cartItem.id), {
-            quantity: cartItem.data().quantity + quantity
-          });
-          window.location.reload(); // Recargar la página para reflejar los cambios
-
+          // Si el usuario no está autenticado, guardar en localStorage
+          const cart = JSON.parse(localStorage.getItem("cart")) || [];
+          const itemIndex = cart.findIndex(item => item.productId === productId && item.config === selectedConfig);
+    
+          if (itemIndex !== -1) {
+            cart[itemIndex].quantity += quantity;
+          } else {
+            cart.push({ productId, config: selectedConfig, quantity });
+          }
+    
+          localStorage.setItem("cart", JSON.stringify(cart));
+          setCartCount(cart.reduce((acc, item) => acc + item.quantity, 0));
         }
-      } else {
-        // Usuario NO autenticado: Guardar en localStorage
-        const cart = JSON.parse(localStorage.getItem("cart")) || [];
-        const itemIndex = cart.findIndex(item => item.productId === productId);
-  
-        if (itemIndex !== -1) {
-          cart[itemIndex].quantity += quantity;
-        } else {
-          cart.push({ productId, quantity });
-        }
-  
-        localStorage.setItem("cart", JSON.stringify(cart));
+      } catch (err) {
+        console.error("Error al agregar al carrito:", err);
       }
-    } catch (err) {
-      throw new Error(err.message);
-    }
-  };
+    };
+ // Eliminar producto del carrito y actualizar el badge sin recargar
+ const removeFromCart = async (cartItemId) => {
+  try {
+    await deleteDoc(doc(db, "carts", cartItemId));
+    console.log("Producto eliminado del carrito:", cartItemId);
 
+    if (user) {
+      const count = await getCartCount(user.uid);
+      setCartCount(count); // Actualiza el badge después de eliminar
+    }
+  } catch (err) {
+    console.error("Error eliminando el producto del carrito:", err);
+  }
+};
   // Add to wishlist
   const addToWishlist = async (userId, productId) => {
     try {
@@ -242,6 +256,8 @@ export function FirebaseProvider({ children }) {
   removeFromCart,
     clearCart,
     addToWishlist,
+    cartCount,
+    setCartCount,
     fetchProducts
   };
 

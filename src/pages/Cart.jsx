@@ -5,6 +5,7 @@ import { useFirebase } from '../context/FirebaseContext';
 import { auth } from '../firebase/config';
 
 export default function Cart() {
+
   const navigate = useNavigate();
   const { getCart, updateCartItem, removeFromCart, getProduct } = useFirebase();
   const [cartItems, setCartItems] = useState([]);
@@ -16,7 +17,7 @@ export default function Cart() {
       setLoading(false);
       return;
     }
-
+  
     try {
       const cartData = await getCart(auth.currentUser.uid);
       const detailedCart = await Promise.all(
@@ -39,15 +40,20 @@ export default function Cart() {
     }
   }, [auth.currentUser]);
 
-  const updateQuantity = async (id, change) => {
-    const updatedItem = cartItems.find((item) => item.id === id);
-    const newQuantity = Math.max(0, updatedItem.quantity + change);
-    if (newQuantity === 0) {
-      await removeFromCart(id);
-      setCartItems(cartItems.filter((item) => item.id !== id));
-    } else {
-      await updateCartItem(id, newQuantity);
-      await fetchCart();
+  const updateQuantity = async (cartId, change) => {
+    setCartItems((prevItems) =>
+      prevItems.map((item) => {
+        if (item.cartId === cartId) {
+          const newQuantity = Math.max(1, item.quantity + change);
+          return { ...item, quantity: newQuantity };
+        }
+        return item;
+      })
+    );
+    const updatedItem = cartItems.find((item) => item.cartId === cartId);
+    if (updatedItem) {
+      const newQuantity = Math.max(1, updatedItem.quantity + change);
+      await updateCartItem(auth.currentUser.uid, cartId, newQuantity);
     }
   };
 
@@ -108,8 +114,8 @@ export default function Cart() {
       <div className="pt-20 min-h-screen bg-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <ShoppingCart className="h-16 w-16 text-purple-500 mx-auto mb-6" />
-            <h1 className="text-3xl font-bold text-dark mb-4">Your Cart is Empty</h1>
+            <ShoppingCart className="h-16 w-16 text-primary mx-auto mb-6" />
+            <h1 className="text-3xl font-bold text-light mb-4">Your Cart is Empty</h1>
             <p className="text-dark mb-8">Start adding some awesome products to your cart!</p>
             <button 
               className="bg-primary hover:bg-secondary text-dark px-8 py-3 rounded-full text-lg font-medium transition-colors"
@@ -127,31 +133,45 @@ export default function Cart() {
     <div className="pt-20 min-h-screen bg-dark">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h1 className="text-3xl font-bold text-light mb-8">Shopping Cart</h1>
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <div className="space-y-4">
-              {cartItems.map((item) => (
-                <div key={item.id} className="bg-light rounded-xl p-6 border border-accent/20">
+              {cartItems.map((item, index) => (
+                <div
+                  key={index}
+                  className="bg-light rounded-xl p-6 border border-accent/20"
+                >
                   <div className="flex items-center gap-6">
-                    <img 
-                      src={item.images[0]} 
-                      alt={item.name} 
+                    <img
+                      src={item.images[0]}
+                      alt={item.name}
                       className="w-24 h-24 object-cover rounded-lg"
                     />
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-dark mb-1">{item.name}</h3>
-                      <p className="text-dark text-sm mb-4">${item.price}</p>
+                      <h3 className="text-lg font-semibold text-dark mb-1">
+                        {item.name}
+                      </h3>
+                      <p className="text-dark text-xs">
+                        Configuración:
+                        <div className="grid gap-2">
+                          {item.config.processors.name}
+                          {item.config.graphicsCard.name}
+                        
+                        </div>
+                      </p>{" "}
+                      {/* Muestra la configuración seleccionada */}
+                      <p className="text-dark text-sm mb-2">${item.price}</p>
                       <div className="flex items-center gap-4">
-                        <button 
-                          onClick={() => updateQuantity(item.id, -1)}
+                        <button
+                          onClick={() => updateQuantity(item.cartId, -1)}
                           className="text-dark hover:text-purple-500 transition-colors"
                         >
                           <MinusCircle className="h-5 w-5" />
                         </button>
                         <span className="text-dark">{item.quantity}</span>
-                        <button 
-                          onClick={() => updateQuantity(item.id, 1)}
+                        <button
+                          onClick={() => updateQuantity(item.cartId, 1)}
                           className="text-dark hover:text-purple-500 transition-colors"
                         >
                           <PlusCircle className="h-5 w-5" />
@@ -162,7 +182,7 @@ export default function Cart() {
                       <p className="text-xl font-bold text-dark mb-2">
                         ${(item.price * item.quantity).toFixed(2)}
                       </p>
-                      <button 
+                      <button
                         onClick={() => handleRemoveItem(item.cartId)}
                         className="text-red-500 hover:text-red-600 transition-colors"
                       >
@@ -174,11 +194,13 @@ export default function Cart() {
               ))}
             </div>
           </div>
-          
+
           <div className="lg:col-span-1">
             <div className="bg-light rounded-xl p-6 border border-accent/20 sticky top-24">
-              <h2 className="text-xl font-bold text-dark mb-6">Order Summary</h2>
-              
+              <h2 className="text-xl font-bold text-dark mb-6">
+                Order Summary
+              </h2>
+
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-dark">
                   <span>Subtotal</span>
@@ -193,7 +215,7 @@ export default function Cart() {
                   <span className="font-bold">${total.toFixed(2)}</span>
                 </div>
               </div>
-              
+
               <button className="w-full bg-primary hover:bg-secondary text-dark hover:text-light py-3 rounded-full font-medium transition-colors flex items-center justify-center gap-2">
                 <CreditCard className="h-5 w-5" />
                 Proceed to Checkout

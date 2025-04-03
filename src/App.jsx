@@ -14,6 +14,7 @@ import ProductDetail from './pages/ProductDetail';
 import Cart from './pages/Cart';
 import Cart1 from './pages/Cart1';
 import ScrollToTop from "./ScrollToTop";
+import { CartProvider } from './context/CartContext';
 
 function App() {
   return (
@@ -22,10 +23,11 @@ function App() {
       <Router>
         <ScrollToTop/>
         <div className="min-h-screen bg-white">
+          <CartProvider>
           <Navbar />
+          </CartProvider>
           <Routes>
             <Route path="/login" element={<Login />} />
-            <Route path="/login1" element={<Login1 />} />
             <Route path="/" element={<Home />} />
             <Route path="/register" element={<Register />} />
             <Route path="/cart" element={<Cart />} />
