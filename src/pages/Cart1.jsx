@@ -3,8 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import { Trash2, MinusCircle, PlusCircle, CreditCard, ShoppingCart } from 'lucide-react';
 import { useFirebase } from '../context/FirebaseContext';
 import { auth } from '../firebase/config';
+import { collection, query, where, getDocs, doc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { db } from '../firebase/config';
 
-export default function Cart1() {
+export default function Cart() {
   const navigate = useNavigate();
   const { getProduct } = useFirebase();
   const [cartItems, setCartItems] = useState([]);
@@ -61,7 +63,7 @@ export default function Cart1() {
     try {
       const cartRef = doc(db, 'carts', cartItemId);
       await deleteDoc(cartRef);
-      await fetchCartItems();
+      setCartItems(cartItems.filter(item => item.id !== cartItemId));
     } catch (err) {
       console.error('Error removing item:', err);
     }
@@ -69,7 +71,7 @@ export default function Cart1() {
 
   const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0);
   const shipping = 0; // Free shipping
-  const tax = subtotal * 0.1; // 10% tax
+  const tax = subtotal * 0.21; // 21% tax as in your original code
   const total = subtotal + shipping + tax;
 
   if (loading) {
@@ -194,7 +196,7 @@ export default function Cart1() {
                   <span>Free</span>
                 </div>
                 <div className="flex justify-between text-gray-400">
-                  <span>Tax</span>
+                  <span>Tax (21%)</span>
                   <span>${tax.toFixed(2)}</span>
                 </div>
                 <div className="border-t border-gray-700 pt-4 flex justify-between text-white">
@@ -205,7 +207,7 @@ export default function Cart1() {
               
               <button className="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-full font-medium transition-colors flex items-center justify-center gap-2">
                 <CreditCard className="h-5 w-5" />
-                Checkout
+                Proceed to Checkout
               </button>
             </div>
           </div>

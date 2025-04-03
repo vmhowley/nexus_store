@@ -1,36 +1,63 @@
-import React, { useState, useEffect } from "react";
-import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
-import { useFirebase } from "../context/FirebaseContext";
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Trash2, MinusCircle, PlusCircle, CreditCard, ShoppingCart } from 'lucide-react';
+import { useFirebase } from '../context/FirebaseContext';
+import { auth } from '../firebase/config';
 
-const Cart = () => {
-  const { user, getCart, updateCartItem, removeFromCart, getProduct } =
-    useFirebase();
+export default function Cart() {
+  const navigate = useNavigate();
+  const { getCart, updateCartItem, removeFromCart, getProduct } = useFirebase();
   const [cartItems, setCartItems] = useState([]);
-
-  useEffect(() => {
-    if (user) {
-      fetchCart();
-    }
-  }, [user]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   const fetchCart = async () => {
-    const cartData = await getCart(user.uid);
-    const detailedCart = await Promise.all(cartData.map(async (item) => {
-      const product = await getProduct(item.productId);
-      return { ...item, ...product, cartId: item.id };  // Asegura que cada producto tenga su cartId correcto
-    }));
-    setCartItems(detailedCart);
+    if (!auth.currentUser) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const cartData = await getCart(auth.currentUser.uid);
+      const detailedCart = await Promise.all(
+        cartData.map(async (item) => {
+          const product = await getProduct(item.productId);
+          return { ...item, ...product, cartId: item.id };
+        })
+      );
+      setCartItems(detailedCart);
+      setLoading(false);
+    } catch (err) {
+      setError(err.message);
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    if (auth.currentUser) {
+      fetchCart();
+    }
+  }, [auth.currentUser]);
 
   const updateQuantity = async (id, change) => {
     const updatedItem = cartItems.find((item) => item.id === id);
     const newQuantity = Math.max(0, updatedItem.quantity + change);
     if (newQuantity === 0) {
       await removeFromCart(id);
+      setCartItems(cartItems.filter((item) => item.id !== id));
     } else {
       await updateCartItem(id, newQuantity);
+      await fetchCart();
     }
-    fetchCart();
+  };
+
+  const handleRemoveItem = async (cartId) => {
+    try {
+      await removeFromCart(cartId);
+      setCartItems(cartItems.filter((item) => item.cartId !== cartId));
+    } catch (err) {
+      console.error('Error removing item:', err);
+    }
   };
 
   const subtotal = cartItems.reduce(
@@ -40,84 +67,141 @@ const Cart = () => {
   const tax = subtotal * 0.21;
   const total = subtotal + tax;
 
-  return (
-    <div className="pt-20 bg-dark min-h-screen ">
-      {cartItems.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-xl text-gray-400">Your cart is empty</p>
-        </div>
-      ) : (
-        <div className="pt-20 min-h-screen text-white grid grid-cols-1 lg:grid-cols-3 gap-8  max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
-          <div className="lg:col-span-2 ">
-            {cartItems.map((item) => (
-              <div
-                key={item.id}
-                className="bg-light rounded-lg p-4 mb-4 flex items-center gap-4"
-              >
-                <img
-                  src={item.images[0]}
-                  alt={item.name}
-                  className="w-24 h-24 object-fill object-center rounded-sm"
-                />
-                <div className="grow space-y-3">
-                  <h3 className="text-lg text-dark font-semibold">{item.name}</h3>
-                  <p className="text-dark font-bold">${item.price}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => updateQuantity(item.id, -1)}
-                    className="p-1 text-dark hover:text-secondary"
-                  >
-                    <Minus className="w-5 h-5" />
-                  </button>
-                  <span className="w-8 text-center  text-dark hover:text-secondary">{item.quantity}</span>
-                  <button
-                    onClick={() => updateQuantity(item.id, 1)}
-                    className="p-1  text-dark hover:text-secondary"
-                  >
-                    <Plus className="w-5 h-5" />
-                  </button>
-                  <button
-                    onClick={async () => {
-                      await removeFromCart(item.cartId);
-                      setCartItems(
-                        cartItems.filter(
-                          (cartItem) => cartItem.cartId !== item.cartId
-                        )
-                      );
-                    }}
-                    className="ml-4 p-1 text-red-500 hover:text-red-400"
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="bg-light rounded-lg p-6 h-fit">
-            <h2 className="text-xl font-bold mb-4 text-dark">Order Summary</h2>
-            <div className="space-y-3 text-dark">
-              <div className="flex justify-between">
-                <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Tax (21%)</span>
-                <span>${tax.toFixed(2)}</span>
-              </div>
-              <div className="border-t border-gray-600 pt-3 flex justify-between font-bold text-dark">
-                <span>Total</span>
-                <span>${total.toFixed(2)}</span>
-              </div>
-            </div>
-            <button className="w-full bg-primary text-dark hover:text-light py-3 rounded-lg mt-6 font-semibold hover:bg-secondary  transition-colors">
-              Proceed to Checkout
+  if (loading) {
+    return (
+      <div className="pt-20 min-h-screen bg-dark flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-purple-500"></div>
+      </div>
+    );
+  }
+
+  if (!auth.currentUser) {
+    return (
+      <div className="pt-20 min-h-screen bg-dark">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center">
+            <ShoppingCart className="h-16 w-16 text-purple-500 mx-auto mb-6" />
+            <h1 className="text-3xl font-bold text-dark mb-4">Your Cart is Waiting</h1>
+            <p className="text-dark mb-8">Please sign in to view your cart and complete your purchase.</p>
+            <button 
+              className="bg-primary hover:bg-secondary text-dark px-8 py-3 rounded-full text-lg font-medium transition-colors"
+              onClick={() => navigate('/login')}
+            >
+              Sign In
             </button>
           </div>
         </div>
-      )}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="pt-20 min-h-screen bg-dark flex items-center justify-center">
+        <div className="text-red-500">Error loading cart: {error}</div>
+      </div>
+    );
+  }
+
+  if (cartItems.length === 0) {
+    return (
+      <div className="pt-20 min-h-screen bg-dark">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+          <div className="text-center">
+            <ShoppingCart className="h-16 w-16 text-purple-500 mx-auto mb-6" />
+            <h1 className="text-3xl font-bold text-dark mb-4">Your Cart is Empty</h1>
+            <p className="text-dark mb-8">Start adding some awesome products to your cart!</p>
+            <button 
+              className="bg-primary hover:bg-secondary text-dark px-8 py-3 rounded-full text-lg font-medium transition-colors"
+              onClick={() => navigate('/products')}
+            >
+              Browse Products
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="pt-20 min-h-screen bg-dark">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <h1 className="text-3xl font-bold text-light mb-8">Shopping Cart</h1>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2">
+            <div className="space-y-4">
+              {cartItems.map((item) => (
+                <div key={item.id} className="bg-light rounded-xl p-6 border border-accent/20">
+                  <div className="flex items-center gap-6">
+                    <img 
+                      src={item.images[0]} 
+                      alt={item.name} 
+                      className="w-24 h-24 object-cover rounded-lg"
+                    />
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-dark mb-1">{item.name}</h3>
+                      <p className="text-dark text-sm mb-4">${item.price}</p>
+                      <div className="flex items-center gap-4">
+                        <button 
+                          onClick={() => updateQuantity(item.id, -1)}
+                          className="text-dark hover:text-purple-500 transition-colors"
+                        >
+                          <MinusCircle className="h-5 w-5" />
+                        </button>
+                        <span className="text-dark">{item.quantity}</span>
+                        <button 
+                          onClick={() => updateQuantity(item.id, 1)}
+                          className="text-dark hover:text-purple-500 transition-colors"
+                        >
+                          <PlusCircle className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xl font-bold text-dark mb-2">
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </p>
+                      <button 
+                        onClick={() => handleRemoveItem(item.cartId)}
+                        className="text-red-500 hover:text-red-600 transition-colors"
+                      >
+                        <Trash2 className="h-5 w-5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div className="lg:col-span-1">
+            <div className="bg-light rounded-xl p-6 border border-accent/20 sticky top-24">
+              <h2 className="text-xl font-bold text-dark mb-6">Order Summary</h2>
+              
+              <div className="space-y-4 mb-6">
+                <div className="flex justify-between text-dark">
+                  <span>Subtotal</span>
+                  <span>${subtotal.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-dark">
+                  <span>Tax (21%)</span>
+                  <span>${tax.toFixed(2)}</span>
+                </div>
+                <div className="border-t border-gray-700 pt-4 flex justify-between text-dark">
+                  <span className="font-bold">Total</span>
+                  <span className="font-bold">${total.toFixed(2)}</span>
+                </div>
+              </div>
+              
+              <button className="w-full bg-primary hover:bg-secondary text-dark hover:text-light py-3 rounded-full font-medium transition-colors flex items-center justify-center gap-2">
+                <CreditCard className="h-5 w-5" />
+                Proceed to Checkout
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
-};
-
-export default Cart;
+}

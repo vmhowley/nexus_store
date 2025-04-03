@@ -1,159 +1,140 @@
-import React, { useState } from "react";
-import { useFirebase } from "../context/FirebaseContext";
-import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Lock, Mail, Eye, EyeOff, LogIn, UserPlus } from 'lucide-react';
+import { auth } from '../firebase/config';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 
-const Login = () => {
-  const { login } = useFirebase();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function Login1() {
   const navigate = useNavigate();
+  const [isLogin, setIsLogin] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setLoading(true);
+
     try {
-      await login(email, password);
-      alert("Inicio de sesión exitoso");
-      navigate("/"); // Redirigir a la página principal
-    } catch (error) {
-      alert("Error al iniciar sesión: " + error.message);
+      if (isLogin) {
+        await signInWithEmailAndPassword(auth, email, password);
+      } else {
+        await createUserWithEmailAndPassword(auth, email, password);
+      }
+      navigate(-1);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
+    <div className="pt-20 min-h-screen bg-gray-900 flex items-center justify-center px-4">
+      <div className="max-w-md w-full">
+        <div className="bg-gray-800 rounded-2xl p-8 border border-purple-500/20">
+          <div className="text-center mb-8">
+            <div className="inline-flex p-4 rounded-full bg-purple-500/10 mb-4">
+              {isLogin ? (
+                <LogIn className="h-8 w-8 text-purple-500" />
+              ) : (
+                <UserPlus className="h-8 w-8 text-purple-500" />
+              )}
+            </div>
+            <h1 className="text-2xl font-bold text-white mb-2">
+              {isLogin ? 'Welcome Back' : 'Create Account'}
+            </h1>
+            <p className="text-gray-400">
+              {isLogin
+                ? 'Sign in to access your account'
+                : 'Sign up to start shopping'}
+            </p>
+          </div>
 
-    /* From Uiverse.io by ParasSalunke */ 
-<div className="flex justify-center items-center h-full w-full pt-20 min-h-screen">
-  <div className="grid gap-8">
-    <section
-      id="back-div"
-      className="bg-linear-to-r border rounded-3xl"
-    >
-      <div
-        className="border-8 border-transparent rounded-xl bg-white dark:bg-gray-900 shadow-xl p-8 m-2"
-      >
-        <h1
-          className="text-5xl font-bold text-center cursor-default dark:text-gray-300 text-gray-900"
-        >
-          Log in
-        </h1>
-        <form onSubmit={handleLogin} action="#" method="post" className="space-y-6">
-          <div>
-            <label for="email" className="block mb-2 text-lg dark:text-gray-300"
-              >Email</label
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-6">
+              <p className="text-red-500 text-sm">{error}</p>
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <label htmlFor="email" className="block text-sm font-medium text-gray-400 mb-2">
+                Email Address
+              </label>
+              <div className="relative">
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full bg-gray-900 border border-gray-700 rounded-lg py-3 px-4 pl-11 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                  placeholder="Enter your email"
+                  required
+                />
+                <Mail className="absolute left-4 top-3.5 h-5 w-5 text-gray-500" />
+              </div>
+            </div>
+
+            <div>
+              <label htmlFor="password" className="block text-sm font-medium text-gray-400 mb-2">
+                Password
+              </label>
+              <div className="relative">
+                <input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-gray-900 border border-gray-700 rounded-lg py-3 px-4 pl-11 pr-11 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                  placeholder="Enter your password"
+                  required
+                />
+                <Lock className="absolute left-4 top-3.5 h-5 w-5 text-gray-500" />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-3.5 text-gray-500 hover:text-gray-400 transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="h-5 w-5" />
+                  ) : (
+                    <Eye className="h-5 w-5" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-            <input
-              id="email"
-              className="border p-3 shadow-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-blue-500 transition transform hover:scale-105 duration-300"
-              type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required            />
+              {loading ? (
+                <div className="flex items-center justify-center">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                </div>
+              ) : (
+                isLogin ? 'Sign In' : 'Create Account'
+              )}
+            </button>
+          </form>
+
+          <div className="mt-6 text-center">
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-purple-500 hover:text-purple-400 text-sm transition-colors"
+            >
+              {isLogin
+                ? "Don't have an account? Sign Up"
+                : 'Already have an account? Sign In'}
+            </button>
           </div>
-          <div>
-            <label for="password" className="block mb-2 text-lg dark:text-gray-300"
-              >Password</label
-            >
-            <input
-              id="password"
-              className="border p-3 shadow-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700 border-gray-300 rounded-lg w-full focus:ring-2 focus:ring-blue-500 transition transform hover:scale-105 duration-300"
-              type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required
-            />
-          </div>
-          <a href="#" className="text-blue-400 text-sm transition hover:underline"
-            >Forget your password?</a
-          >
-          <button
-            className="w-full p-3 mt-4 text-white bg-linear-to-r from-lime-500 to-lime-400 rounded-lg hover:scale-105 transition transform duration-300 shadow-lg focus:outline-hidden focus:ring-2 focus:ring-blue-500"
-            type="submit"
-          >
-            LOG IN
-          </button>
-        </form>
-        <div className="flex flex-col mt-4 text-sm text-center dark:text-gray-300">
-          <p>
-            Don't have an account?
-            <a href="#" className="text-blue-400 transition hover:underline"
-              >Sign Up</a
-            >
-          </p>
-        </div>
-        <div id="third-party-auth" className="flex justify-center gap-4 mt-5">
-          <button
-            className="p-2 rounded-lg hover:scale-105 transition transform duration-300 shadow-lg"
-          >
-            <img
-              className="w-6 h-6"
-              loading="lazy"
-              src="https://ucarecdn.com/8f25a2ba-bdcf-4ff1-b596-088f330416ef/"
-              alt="Google"
-            />
-          </button>
-          <button
-            className="p-2 rounded-lg hover:scale-105 transition transform duration-300 shadow-lg"
-          >
-            <img
-              className="w-6 h-6"
-              loading="lazy"
-              src="https://ucarecdn.com/95eebb9c-85cf-4d12-942f-3c40d7044dc6/"
-              alt="LinkedIn"
-            />
-          </button>
-          <button
-            className="p-2 rounded-lg hover:scale-105 transition transform duration-300 shadow-lg"
-          >
-            <img
-              className="w-6 h-6 dark:invert"
-              loading="lazy"
-              src="https://ucarecdn.com/be5b0ffd-85e8-4639-83a6-5162dfa15a16/"
-              alt="GitHub"
-            />
-          </button>
-          <button
-            className="p-2 rounded-lg hover:scale-105 transition transform duration-300 shadow-lg"
-          >
-            <img
-              className="w-6 h-6"
-              loading="lazy"
-              src="https://ucarecdn.com/6f56c0f1-c9c0-4d72-b44d-51a79ff38ea9/"
-              alt="Facebook"
-            />
-          </button>
-          <button
-            className="p-2 rounded-lg hover:scale-105 transition transform duration-300 shadow-lg"
-          >
-            <img
-              className="w-6 h-6"
-              loading="lazy"
-              src="https://ucarecdn.com/82d7ca0a-c380-44c4-ba24-658723e2ab07/"
-              alt="Twitter"
-            />
-          </button>
-          <button
-            className="p-2 rounded-lg hover:scale-105 transition transform duration-300 shadow-lg"
-          >
-            <img
-              className="w-6 h-6"
-              loading="lazy"
-              src="https://ucarecdn.com/3277d952-8e21-4aad-a2b7-d484dad531fb/"
-              alt="Apple"
-            />
-          </button>
-        </div>
-        <div className="mt-4 text-center text-sm text-gray-500">
-          <p>
-            By signing in, you agree to our
-            <a href="#" className="text-blue-400 transition hover:underline"
-              >Terms</a
-            >
-            and
-            <a href="#" className="text-blue-400 transition hover:underline"
-              >Privacy Policy</a
-            >.
-          </p>
         </div>
       </div>
-    </section>
-  </div>
-</div>
-
+    </div>
   );
-};
-
-export default Login;
+}
