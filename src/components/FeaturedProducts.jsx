@@ -1,15 +1,97 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { Star, Heart, Cpu, MemoryStick, HardDrive } from 'lucide-react';
+import { Star, Heart, Cpu, MemoryStick, HardDrive, ChevronRight, ChevronLeft, X } from 'lucide-react';
 import { useFirebase } from '../context/FirebaseContext';
 import { auth } from '../firebase/config';
+
+function CustomArrow({ className, style, onClick, direction }) {
+  const Icon = direction === 'next' ? ChevronRight : ChevronLeft;
+  return (
+    <button
+      className={`${className} !bg-dark/80 !w-10 !h-10 rounded-full flex items-center justify-center hover:bg-dark transition-colors before:content-none`}
+      style={{ ...style, display: 'flex' }}
+      onClick={onClick}
+    >
+      <Icon className="w-6 h-6 text-white" />
+    </button>
+  );
+}
+
+function ConfigurationModal({ configurations, onClose }) {
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-light rounded-2xl p-6 max-w-lg w-full mx-4 max-h-[80vh] overflow-y-auto">
+        <div className="flex justify-between items-center mb-6">
+          <h3 className="text-xl font-bold text-white">All Configurations</h3>
+          <button 
+            onClick={onClose}
+            className="p-2 hover:bg-gray-700 rounded-full transition-colors"
+          >
+            <X className="h-5 w-5 text-accent" />
+          </button>
+        </div>
+        
+        <div className="space-y-6">
+          <div>
+            <h4 className="text-primary font-medium mb-2">Processors</h4>
+            <div className="space-y-2">
+              {configurations.processors?.map((processor, index) => (
+                <div key={index} className="flex items-center text-dark bg-gray-700/50 p-2 rounded-lg">
+                  <Cpu className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
+                  <span className="text-sm">{processor.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-primary font-medium mb-2">Graphics Cards</h4>
+            <div className="space-y-2">
+              {configurations.gpu?.map((gpu, index) => (
+                <div key={index} className="flex items-center text-dark bg-gray-700/50 p-2 rounded-lg">
+                  <MemoryStick className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
+                  <span className="text-sm">{gpu.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-primary font-medium mb-2">Memory</h4>
+            <div className="space-y-2">
+              {configurations.ram?.map((ram, index) => (
+                <div key={index} className="flex items-center text-dark bg-gray-700/50 p-2 rounded-lg">
+                  <HardDrive className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
+                  <span className="text-sm">{ram.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <div>
+            <h4 className="text-primary font-medium mb-2">Storage</h4>
+            <div className="space-y-2">
+              {configurations.storage?.map((storage, index) => (
+                <div key={index} className="flex items-center text-dark bg-gray-700/50 p-2 rounded-lg">
+                  <HardDrive className="h-4 w-4 text-primary mr-2 flex-shrink-0" />
+                  <span className="text-sm">{storage.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function FeaturedProducts() {
   const navigate = useNavigate();
   const { products, loading, error, addToWishlist } = useFirebase();
+  const [selectedConfig, setSelectedConfig] = useState(null);
 
   const handleProductClick = (productId) => {
     navigate(`/product/${productId}`);
@@ -30,26 +112,6 @@ export default function FeaturedProducts() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="pt-20 min-h-screen bg-dark flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-purple-500"></div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="bg-gray-900 py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center text-red-500">
-            Error loading products: {error}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const sliderSettings = {
     dots: true,
     infinite: true,
@@ -57,94 +119,159 @@ export default function FeaturedProducts() {
     slidesToShow: 1,
     slidesToScroll: 1,
     arrows: true,
+    nextArrow: <CustomArrow direction="next" />,
+    prevArrow: <CustomArrow direction="prev" />,
+    autoplay: true,
+    autoplaySpeed: 5000,
+    pauseOnHover: true,
+    dotsClass: "slick-dots !bottom-4",
+    customPaging: () => (
+      <div className="w-2 h-2 bg-white/50 rounded-full hover:bg-white/80 transition-colors" />
+    )
   };
 
+  if (loading) {
+    return (
+      <div className="bg-dark py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="bg-light rounded-2xl p-4 animate-pulse">
+                <div className="h-60 bg-gray-700 rounded-xl mb-4" />
+                <div className="space-y-3">
+                  <div className="h-6 bg-gray-700 rounded w-3/4" />
+                  <div className="h-4 bg-gray-700 rounded w-1/2" />
+                  <div className="h-4 bg-gray-700 rounded w-2/3" />
+                  <div className="h-4 bg-gray-700 rounded w-1/3" />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-dark py-24">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-red-500/10 mb-4">
+              <span className="text-2xl">⚠️</span>
+            </div>
+            <h3 className="text-xl font-semibold text-white mb-2">Error Loading Products</h3>
+            <p className="text-red-400">{error}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-dark pt-16 min-h-screen">
+    <div className="bg-dark py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-light mb-4">
-            Featured Builds
-          </h2>
+          <h2 className="text-4xl font-bold text-white mb-4">Featured Builds</h2>
           <p className="text-accent max-w-2xl mx-auto">
-            Experience computing excellence with our carefully curated selection
-            of premium pre-built systems.
+            Experience computing excellence with our carefully curated selection of premium pre-built systems.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 lg:content-center  gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {products.map((product) => (
-            <div key={product.id} className="p-4">
-              <div
-                className="bg-light shadow-md rounded-2xl overflow-hidden border border-secondary/20 hover:border-accent/40 transition-all cursor-pointer transform hover:scale-[1.02] hover:shadow-xl hover:shadow-lime-500/10"
-                onClick={() => handleProductClick(product.id)}
-              >
-                <div className="relative">
-                  {product.images.length > 1 ? (
-                    <Slider {...sliderSettings}>
-                      {product.images.map((image, index) => (
-                        <div key={index}>
-                          <img src={image} alt={`${product.name} ${index}`} className="w-full h-60 object-center object-fill" />
-                        </div>
-                      ))}
-                    </Slider>
-                  ) : (
-                    <img src={product.images[0]} alt={product.name} className="w-full h-60 object-center object-fill" />
-                  )}
-                  <button
-                    className="absolute top-4 right-4 p-2 bg-gray-900/80 backdrop-blur-xs rounded-full hover:bg-gray-900"
-                    onClick={(e) => handleWishlist(e, product.id)}
-                  >
-                    <Heart className="h-5 w-5 text-lime-500" />
-                  </button>
+            <div
+              key={product.id}
+              className="bg-light rounded-2xl overflow-hidden border border-primary/20 hover:border-primary/40 transition-all cursor-pointer transform hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/10"
+              onClick={() => handleProductClick(product.id)}
+            >
+              <div className="relative">
+  
+                  <div className="aspect-[4/3]">
+                    <img
+                      src={product.images?.[0]}
+                      alt={product.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+    
+                <button
+                  className="absolute top-4 right-4 p-2 bg-dark/80 backdrop-blur-sm rounded-full hover:bg-dark z-10 transition-colors"
+                  onClick={(e) => handleWishlist(e, product.id)}
+                >
+                  <Heart className="h-5 w-5 text-primary" />
+                </button>
+              </div>
+
+              <div className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-xl font-bold text-dark line-clamp-2">{product.name}</h3>
+                  <div className="flex items-center bg-primary/10 px-2 py-1 rounded-full">
+                    <Star className="h-4 w-4 text-primary fill-current" />
+                    <span className="ml-1 text-primary text-sm font-medium">{product.rating}</span>
+                  </div>
                 </div>
 
-                <div className="p-6">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-lg line-clamp-3 font-bold text-dark">
-                      {product.name}
-                    </h3>
-                    <div className="flex items-center">
-                      <Star className="h-5 w-5 text-yellow-500 fill-current" />
-                      <span className="ml-1 text-dark">{product.rating}</span>
+                {product.configurations && (
+                  <div className="mb-6">
+                    <div className="space-y-2">
+                      {/* Show only first configuration of each type */}
+                      {product.configurations.processors?.[0] && (
+                        <div className="flex items-center text-dark">
+                          <Cpu className="h-4 w-4 text-primary mr-2" />
+                          <span className="text-sm truncate">{product.configurations.processors[0].name}</span>
+                        </div>
+                      )}
+                      {product.configurations.gpu?.[0] && (
+                        <div className="flex items-center text-dark">
+                          <MemoryStick className="h-4 w-4 text-primary mr-2" />
+                          <span className="text-sm truncate">{product.configurations.gpu[0].name}</span>
+                        </div>
+                      )}
+                      {product.configurations.ram?.[0] && (
+                        <div className="flex items-center text-dark">
+                          <HardDrive className="h-4 w-4 text-primary mr-2" />
+                          <span className="text-sm truncate">{product.configurations.ram[0].name}</span>
+                        </div>
+                      )}
                     </div>
-                  </div>
-
-                  <div className="space-y-2 mb-6">
-                    <div className="flex items-center text-dark">
-                      <Cpu className="h-4 w-4 mr-2" />
-                      <span className="text-sm">{product.specs.cpu}</span>
-                    </div>
-                    <div className="flex items-center text-dark">
-                      <MemoryStick className="h-4 w-4 mr-2" />
-                      <span className="text-sm">{product.specs.gpu}</span>
-                    </div>
-                    <div className="flex items-center text-dark">
-                      <HardDrive className="h-4 w-4 mr-2" />
-                      <span className="text-sm">{product.specs.ram}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <span className="text-2xl font-bold text-dark">
-                      ${product.price}
-                    </span>
+                    
                     <button
-                      className="bg-dark hover:bg-light text-white hover:text-dark cursor-pointer px-6 py-2 rounded-full text-sm font-medium transition-colors"
+                      className="mt-3 text-sm text-primary hovertext-secondarytransition-colors"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleProductClick(product.id);
+                        setSelectedConfig(product.configurations);
                       }}
                     >
-                      Configure
+                      View all configurations
                     </button>
                   </div>
+                )}
+
+                <div className="flex items-center justify-between">
+                  <span className="text-2xl font-bold text-primary">${product.price}</span>
+                  <button
+                    className="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-full text-sm font-medium transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleProductClick(product.id);
+                    }}
+                  >
+                    Configure
+                  </button>
                 </div>
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {selectedConfig && (
+        <ConfigurationModal 
+          configurations={selectedConfig} 
+          onClose={() => setSelectedConfig(null)} 
+        />
+      )}
     </div>
   );
 }

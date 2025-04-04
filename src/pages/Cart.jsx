@@ -5,11 +5,10 @@ import { useFirebase } from '../context/FirebaseContext';
 import { auth } from '../firebase/config';
 
 export default function Cart() {
-
   const navigate = useNavigate();
   const { getCart, updateCartItem, removeFromCart, getProduct } = useFirebase();
   const [cartItems, setCartItems] = useState([]);
-  const [cartDat, setCartDat] = useState([]);
+  const [cartData, setCartData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -24,11 +23,17 @@ export default function Cart() {
       const detailedCart = await Promise.all(
         cartData.map(async (item) => {
           const product = await getProduct(item.productId);
-          return { ...item, ...product, cartId: item.id };
+          console.log(cartData)
+          return { 
+            ...item, 
+            ...product, 
+            cartId: item.id,
+            selectedConfigs: item.selectedConfigs || {} 
+          };
         })
       );
       setCartItems(detailedCart);
-      setCartDat(cartData);
+      setCartData(cartData);
       setLoading(false);
     } catch (err) {
       setError(err.message);
@@ -41,6 +46,48 @@ export default function Cart() {
       fetchCart();
     }
   }, [auth.currentUser]);
+
+  const calculateItemTotal = (item) => {
+    let configTotal = 0;
+    
+    // Calculate additional costs from selected configurations
+    if (item.selectedConfigs) {
+      // Add processor cost if selected
+      if (item.selectedConfigs.processor) {
+        const processor = item.configurations.processors.find(
+          p => p.id === item.selectedConfigs.processor
+        );
+        if (processor) configTotal += processor.price;
+      }
+
+      // Add GPU cost if selected
+      if (item.selectedConfigs.gpu) {
+        const gpu = item.configurations.gpu.find(
+          g => g.id === item.selectedConfigs.gpu
+        );
+        if (gpu) configTotal += gpu.price;
+      }
+
+      // Add RAM cost if selected
+      if (item.selectedConfigs.ram) {
+        const ram = item.configurations.ram.find(
+          r => r.id === item.selectedConfigs.ram
+        );
+        if (ram) configTotal += ram.price;
+      }
+
+      // Add storage cost if selected
+      if (item.selectedConfigs.storage) {
+        const storage = item.configurations.storage.find(
+          s => s.id === item.selectedConfigs.storage
+        );
+        if (storage) configTotal += storage.price;
+      }
+    }
+
+    // Base price + configuration costs * quantity
+    return (item.price + configTotal) * item.quantity;
+  };
 
   const updateQuantity = async (cartId, change) => {
     setCartItems((prevItems) =>
@@ -68,14 +115,10 @@ export default function Cart() {
     }
   };
 
-  const subtotal = cartDat.reduce(
-    (sum, item) => sum + item.price * item.quantity, // Usa el precio correcto almacenado
-    0
-  );
-  
+  // Calculate totals
+  const subtotal = cartData.reduce((sum, item) => sum + calculateItemTotal(item), 0);
   const tax = subtotal * 0.03;
-  const total = subtotal * cartDat[0]?.quantity + tax;
- ;
+  const total = subtotal + tax;
 
   if (loading) {
     return (
@@ -141,37 +184,56 @@ export default function Cart() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2">
             <div className="space-y-4">
-            {cartItems.map((item) => (
-  <div key={item.id} className="bg-light rounded-xl p-6 border border-accent/20">
-    <div className="flex items-center gap-6">
-      <img 
-        src={item.images[0]} 
-        alt={item.name} 
-        className="w-24 h-24 object-cover rounded-lg"
-      />
-      <div className="flex-1">
-        <h3 className="text-lg font-semibold text-dark mb-1">{item.name}</h3>
-        <p className="text-dark text-sm mb-2">${subtotal}</p>
+              {cartItems.map((item) => {
+                const itemTotal = calculateItemTotal(item);
+                return (
+                  <div key={item.id} className="bg-light rounded-xl p-6 border border-accent/20">
+                    <div className="flex items-center gap-6">
+                      <img 
+                        src={item.images[0]} 
+                        alt={item.name} 
+                        className="w-24 h-24 object-cover rounded-lg"
+                      />
+                      <div className="flex-1">
+                        <h3 className="text-lg font-semibold text-dark mb-1">{item.name}</h3>
+                        <p className="text-dark text-sm mb-2">
+                          Base price: ${item.price}
+                          {Object.keys(item.selectedConfigs || {}).length > 0 && (
+                            <span className="text-accent"> + configurations</span>
+                          )}
+                        </p>
 
-        <div className="flex items-center gap-4">
-          <button onClick={() => updateQuantity(item.cartId, -1)} className="text-dark hover:text-purple-500 transition-colors">
-            <MinusCircle className="h-5 w-5" />
-          </button>
-          <span className="text-dark">{item.quantity}</span>
-          <button onClick={() => updateQuantity(item.cartId, 1)} className="text-dark hover:text-purple-500 transition-colors">
-            <PlusCircle className="h-5 w-5" />
-          </button>
-        </div>
-      </div>
-      <div className="text-right">
-        <p className="text-xl font-bold text-dark mb-2">${(subtotal * item.quantity).toFixed(2)}</p>
-        <button onClick={() => handleRemoveItem(item.cartId)} className="text-red-500 hover:text-red-600 transition-colors">
-          <Trash2 className="h-5 w-5" />
-        </button>
-      </div>
-    </div>
-  </div>
-          ))}
+                        <div className="flex items-center gap-4">
+                          <button 
+                            onClick={() => updateQuantity(item.cartId, -1)} 
+                            className="text-dark hover:text-purple-500 transition-colors"
+                          >
+                            <MinusCircle className="h-5 w-5" />
+                          </button>
+                          <span className="text-dark">{item.quantity}</span>
+                          <button 
+                            onClick={() => updateQuantity(item.cartId, 1)} 
+                            className="text-dark hover:text-purple-500 transition-colors"
+                          >
+                            <PlusCircle className="h-5 w-5" />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xl font-bold text-dark mb-2">
+                          ${subtotal.toFixed(2)}
+                        </p>
+                        <button 
+                          onClick={() => handleRemoveItem(item.cartId)} 
+                          className="text-red-500 hover:text-red-600 transition-colors"
+                        >
+                          <Trash2 className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
           </div>
 
@@ -184,7 +246,7 @@ export default function Cart() {
               <div className="space-y-4 mb-6">
                 <div className="flex justify-between text-dark">
                   <span>Subtotal</span>
-                  <span>${(subtotal * cartItems.length).toFixed(2)}</span>
+                  <span>${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-dark">
                   <span>Tax (3%)</span>
