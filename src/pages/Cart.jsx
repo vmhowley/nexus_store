@@ -52,36 +52,28 @@ export default function Cart() {
     let configTotal = 0;
     
     // Calculate additional costs from selected configurations
-    if (item.selectedConfigs) {
+    if (item.config) {
       // Add processor cost if selected
-      if (item.selectedConfigs.processor) {
-        const processor = item.configurations.processors.find(
-          p => p.id === item.selectedConfigs.processor
-        );
-        if (processor) configTotal += processor.price;
+      if (item.config.processors) {
+        const processor = item.config.processors
+         configTotal += processor.price;
       }
 
       // Add GPU cost if selected
-      if (item.selectedConfigs.gpu) {
-        const gpu = item.configurations.gpu.find(
-          g => g.id === item.selectedConfigs.gpu
-        );
+      if (item.config.gpu) {
+        const gpu = item.config.gpu
         if (gpu) configTotal += gpu.price;
       }
 
       // Add RAM cost if selected
-      if (item.selectedConfigs.ram) {
-        const ram = item.configurations.ram.find(
-          r => r.id === item.selectedConfigs.ram
-        );
+      if (item.config.ram) {
+        const ram = item.config.ram
         if (ram) configTotal += ram.price;
       }
 
       // Add storage cost if selected
-      if (item.selectedConfigs.storage) {
-        const storage = item.configurations.storage.find(
-          s => s.id === item.selectedConfigs.storage
-        );
+      if (item.config.storage) {
+        const storage = item.config.storage
         if (storage) configTotal += storage.price;
       }
     }
@@ -117,7 +109,7 @@ export default function Cart() {
   };
 
   // Calculate totals
-  const subtotal = cartData.reduce((sum, item) => sum + calculateItemTotal(item), 0);
+  const subtotal = cartItems.reduce((sum, item) => sum + calculateItemTotal(item), 0);
   const tax = subtotal * 0.03;
   const total = subtotal + tax;
 
@@ -187,6 +179,8 @@ export default function Cart() {
             <div className="space-y-4">
               {cartItems.map((item) => {
                 const itemTotal = calculateItemTotal(item);
+                if (!itemTotal) return null; // Skip if itemTotal is undefined or null
+              
                 return (
                   <div key={item.id} className="bg-light rounded-xl p-6 border border-accent/20">
                     <div className="flex items-center gap-6">
@@ -196,12 +190,21 @@ export default function Cart() {
                         className="w-24 h-24 object-cover rounded-lg"
                       />
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-dark mb-1">{item.name}</h3>
-                        <p className="text-dark text-sm mb-2">
+                        <h3 className="text-lg font-semibold text-dark mb-2">{item.name}</h3>
+                        {/* <p className="text-dark text-sm mb-2">
                           Base price: ${item.price}
-                          {Object.keys(item.selectedConfigs || {}).length > 0 && (
-                            <span className="text-accent"> + configurations</span>
-                          )}
+                        
+                        </p> */}
+                        {item.config && (
+                          <div className="text-dark font-semibold text-xs mb-2 flex  line-clamp-1 gap-1">
+                            <p>{item.config.processors ? item.config.processors.name : 'None'}</p>|
+                            <p>{item.config.gpu ? item.config.gpu.name : 'None'}</p>|
+                            <p>{item.config.ram ? item.config.ram.name : 'None'}</p>|
+                            <p>{item.config.storage ? item.config.storage.name : 'None'}</p>
+                          </div>
+                        )}
+                        <p className="text-dark text-sm mb-2">
+                          Quantity: {item.quantity}
                         </p>
 
                         <div className="flex items-center gap-4">
@@ -222,7 +225,7 @@ export default function Cart() {
                       </div>
                       <div className="text-right">
                         <p className="text-xl font-bold text-dark mb-2">
-                          ${subtotal.toFixed(2)}
+                          ${itemTotal.toFixed(2)}
                         </p>
                         <button 
                           onClick={() => handleRemoveItem(item.cartId)} 
