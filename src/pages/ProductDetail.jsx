@@ -89,15 +89,37 @@ export default function ProductDetail() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           <div className="relative">
-            <Slider dots infinite speed={500} slidesToShow={1} slidesToScroll={1} arrows>
-              {product.images.map((img, index) => (
-                <div key={index}>
-                  <img src={img} alt={product.name} className="w-full rounded-2xl shadow-2xl" />
-                </div>
-              ))}
-            </Slider>
+            {product.images.length > 1 && (
+              <Slider
+                dots
+                infinite
+                speed={500}
+                slidesToShow={1}
+                slidesToScroll={1}
+                arrows
+              >
+                {product.images.map((img, index) => (
+                  <div key={index}>
+                    <img
+                      src={img}
+                      alt={product.name}
+                      className="w-full rounded-2xl shadow-2xl"
+                    />
+                  </div>
+                ))}
+              </Slider>
+            )}
+            {product.images.length === 1 && (
+              <img
+                src={product.images[0]}
+                alt={product.name}
+                className="w-full rounded-2xl shadow-2xl"
+              />
+            )}
+            {/* Wishlist button */}
+
             {auth.currentUser && (
-              <button 
+              <button
                 className="absolute top-4 right-4 p-3 bg-gray-900/80 backdrop-blur-xs rounded-full hover:bg-gray-900"
                 onClick={() => addToWishlist(auth.currentUser.uid, id)}
               >
@@ -107,22 +129,28 @@ export default function ProductDetail() {
           </div>
 
           <div>
-            <h1 className="text-xl font-bold text-light mb-4">{product.name}</h1>
+            <h1 className="text-xl font-bold text-light mb-4">
+              {product.name}
+            </h1>
 
             {product.configurations && (
               <div className="mb-8">
-                <h3 className="text-xl font-bold text-light mb-4">Customize your PC</h3>
+                <h3 className="text-xl font-bold text-light mb-4">
+                  Customize your PC
+                </h3>
                 {Object.keys(product.configurations).map((category) => (
                   <div key={category} className="mb-4">
-                    <label className="text-light font-semibold capitalize">{category}:</label>
+                    <label className="text-light font-semibold capitalize">
+                      {category}:
+                    </label>
                     <div className="flex flex-wrap mt-2 gap-2">
                       {product.configurations[category].map((option) => (
                         <button
                           key={option.name}
                           className={`px-4 py-2 rounded-lg text-sm font-medium ${
                             selectedConfig[category]?.name === option.name
-                              ? 'bg-primary text-white'
-                              : 'bg-gray-800 text-light hover:bg-gray-700'
+                              ? "bg-primary text-white"
+                              : "bg-gray-800 text-light hover:bg-gray-700"
                           }`}
                           onClick={() => handleConfigChange(category, option)}
                         >
@@ -134,13 +162,34 @@ export default function ProductDetail() {
                 ))}
               </div>
             )}
+            {/* Product Features */}
+            {product.features && (
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-light mb-4">Features</h3>
+                <ul className="list-disc list-inside space-y-2">
+                  {product.features.map((feature, index) => (
+                    <li key={index} className="text-light">{feature}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {/* Product Description */}
+            {product.description && (
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-light mb-4">Description</h3>
+                <p className="text-light">{product.description}</p>
+              </div>
+            )}
+            {/* Final Price and Add to Cart Button */}
 
             <div className="flex items-center justify-between bg-light rounded-xl p-6 mb-8">
               <div>
                 <span className="text-dark">Final Price</span>
-                <div className="text-3xl font-bold text-dark">${finalPrice.toFixed(2)}</div>
+                <div className="text-3xl font-bold text-dark">
+                  ${finalPrice.toFixed(2)}
+                </div>
               </div>
-              <button 
+              <button
                 className="bg-primary hover:bg-secondary text-dark px-8 py-3 rounded-full text-lg font-medium"
                 onClick={handleAddToCart}
               >

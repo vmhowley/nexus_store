@@ -42,6 +42,7 @@ export default function Cart() {
   };
 
   useEffect(() => {
+    console.log(auth.currentUser);
     if (auth.currentUser) {
       fetchCart();
     }

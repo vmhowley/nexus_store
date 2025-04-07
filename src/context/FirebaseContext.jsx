@@ -17,8 +17,7 @@ export function FirebaseProvider({ children }) {
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
   const auth = getAuth();
-  const [cartCount, setCartCount] = useState(0); // Nuevo estado para el badge
-
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -27,7 +26,7 @@ export function FirebaseProvider({ children }) {
         console.log("User logged in:", currentUser.email);
         await syncCartAfterLogin(currentUser.uid);
         const count = await getCartCount(currentUser.uid);
-        setCartCount(count); // Actualiza el badge al iniciar sesión
+        setCartCount(count);
       }
     });
     return () => unsubscribe();
@@ -41,7 +40,6 @@ export function FirebaseProvider({ children }) {
         id: doc.id,
         ...doc.data()
       }));
-      
       setProducts(productsData);
       setLoading(false);
     } catch (err) {
@@ -49,68 +47,43 @@ export function FirebaseProvider({ children }) {
       setLoading(false);
     }
   };
-  const getCart = async (userId) => {
-    try {
-      const cartRef = collection(db, "carts");
-      const q = query(cartRef, where("userId", "==", userId));
-      const querySnapshot = await getDocs(q);
-  
-      return querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-    } catch (err) {
-      console.error("Error obteniendo el carrito:", err);
-      return [];
-    }
-  };
-  
-  const updateCartItem = async (userId,cartItemId, newQuantity) => {
-    try {
-      const cartItemRef = doc(db, "carts", cartItemId);
-      await updateDoc(cartItemRef, { quantity: newQuantity });
 
-    } catch (err) {
-      console.error("Error actualizando el producto en el carrito:", err);
-    }
-    const count = await getCartCount(userId);
-    setCartCount(count);
-  };
-
-
-  const clearCart = async (userId) => {
+  // Add a new product
+  const addProduct = async (productData) => {
     try {
-      const cartRef = collection(db, "carts");
-      const q = query(cartRef, where("userId", "==", userId));
-      const querySnapshot = await getDocs(q);
-  
-      querySnapshot.forEach(async (doc) => {
-        await deleteDoc(doc.ref);
-      });
+      const docRef = await addDoc(collection(db, 'products'), productData);
+      const newProduct = { id: docRef.id, ...productData };
+      setProducts(prevProducts => [...prevProducts, newProduct]);
+      return newProduct;
     } catch (err) {
-      console.error("Error al limpiar el carrito:", err);
+      throw new Error(err.message);
     }
   };
 
-// Obtener la cantidad total de productos en el carrito
-const getCartCount = async (userId) => {
-  try {
-    const cartRef = collection(db, "carts");
-    const q = query(cartRef, where("userId", "==", userId));
-    const querySnapshot = await getDocs(q);
+  // Update a product
+  const updateProduct = async (id, productData) => {
+    try {
+      const productRef = doc(db, 'products', id);
+      await updateDoc(productRef, productData);
+      setProducts(prevProducts => 
+        prevProducts.map(product => 
+          product.id === id ? { ...product, ...productData } : product
+        )
+      );
+    } catch (err) {
+      throw new Error(err.message);
+    }
+  };
 
-    let totalCount = 0;
-    querySnapshot.forEach((doc) => {
-      totalCount += doc.data().quantity;
-    });
-
-    return totalCount;
-  } catch (err) {
-    console.error("Error al obtener el carrito:", err);
-    return 0;
-  }
-};
-
+  // Delete a product
+  const deleteProduct = async (id) => {
+    try {
+      await deleteDoc(doc(db, 'products', id));
+      setProducts(prevProducts => prevProducts.filter(product => product.id !== id));
+    } catch (err) {
+      throw new Error(err.message);
+    }
+  };
 
   // Get a single product
   const getProduct = async (id) => {
@@ -125,7 +98,141 @@ const getCartCount = async (userId) => {
       throw new Error(err.message);
     }
   };
- // Registro de usuario
+
+  // Get cart items
+  const getCart = async (userId) => {
+    try {
+      const cartRef = collection(db, "carts");
+      const q = query(cartRef, where("userId", "==", userId));
+      const querySnapshot = await getDocs(q);
+      return querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+    } catch (err) {
+      console.error("Error obteniendo el carrito:", err);
+      return [];
+    }
+  };
+
+  // Update cart item
+  const updateCartItem = async (userId, cartItemId, newQuantity) => {
+    try {
+      const cartItemRef = doc(db, "carts", cartItemId);
+      await updateDoc(cartItemRef, { quantity: newQuantity });
+    } catch (err) {
+      console.error("Error actualizando el producto en el carrito:", err);
+    }
+    const count = await getCartCount(userId);
+    setCartCount(count);
+  };
+
+  // Clear cart
+  const clearCart = async (userId) => {
+    try {
+      const cartRef = collection(db, "carts");
+      const q = query(cartRef, where("userId", "==", userId));
+      const querySnapshot = await getDocs(q);
+  
+      querySnapshot.forEach(async (doc) => {
+        await deleteDoc(doc.ref);
+      });
+    } catch (err) {
+      console.error("Error al limpiar el carrito:", err);
+    }
+  };
+
+  // Get cart count
+  const getCartCount = async (userId) => {
+    try {
+      const cartRef = collection(db, "carts");
+      const q = query(cartRef, where("userId", "==", userId));
+      const querySnapshot = await getDocs(q);
+
+      let totalCount = 0;
+      querySnapshot.forEach((doc) => {
+        totalCount += doc.data().quantity;
+      });
+
+      return totalCount;
+    } catch (err) {
+      console.error("Error al obtener el carrito:", err);
+      return 0;
+    }
+  };
+
+  // Add to cart
+  const addToCart = async (userId, productId, selectedConfig, price, quantity = 1) => {
+    try {
+      if (userId) {
+        const cartRef = collection(db, 'carts');
+        const q = query(
+          cartRef,
+          where('userId', '==', userId),
+          where('productId', '==', productId)
+        );
+        const querySnapshot = await getDocs(q);
+
+        let existingCartItem = null;
+
+        querySnapshot.forEach((doc) => {
+          const itemData = doc.data();
+          if (JSON.stringify(itemData.config) === JSON.stringify(selectedConfig)) {
+            existingCartItem = { id: doc.id, ...itemData };
+          }
+        });
+
+        if (existingCartItem) {
+          await updateDoc(doc(db, 'carts', existingCartItem.id), {
+            quantity: existingCartItem.quantity + quantity
+          });
+        } else {
+          await addDoc(cartRef, {
+            userId,
+            productId,
+            config: selectedConfig,
+            quantity,
+            price
+          });
+        }
+
+        setCartCount(prevCount => prevCount + quantity);
+      } else {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const itemIndex = cart.findIndex(
+          item => item.productId === productId && JSON.stringify(item.config) === JSON.stringify(selectedConfig)
+        );
+
+        if (itemIndex !== -1) {
+          cart[itemIndex].quantity += quantity;
+        } else {
+          cart.push({ productId, config: selectedConfig, quantity, price });
+        }
+
+        localStorage.setItem("cart", JSON.stringify(cart));
+        setCartCount(cart.reduce((acc, item) => acc + item.quantity, 0));
+      }
+    } catch (err) {
+      console.error("Error al agregar al carrito:", err);
+    }
+  };
+
+  // Remove from cart
+  const removeFromCart = async (cartItemId) => {
+    try {
+      await deleteDoc(doc(db, "carts", cartItemId));
+      console.log("Producto eliminado del carrito:", cartItemId);
+
+      if (user) {
+        const count = await getCartCount(user.uid);
+        setCartCount(count);
+      }
+    } catch (err) {
+      console.error("Error eliminando el producto del carrito:", err);
+    }
+  };
+
+  // Authentication functions
   const register = async (email, password) => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -135,7 +242,6 @@ const getCartCount = async (userId) => {
     }
   };
 
-  // Inicio de sesión
   const login = async (email, password) => {
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
@@ -145,7 +251,6 @@ const getCartCount = async (userId) => {
     }
   };
 
-  // Cerrar sesión
   const logout = async () => {
     try {
       await signOut(auth);
@@ -153,97 +258,18 @@ const getCartCount = async (userId) => {
       throw new Error(err.message);
     }
   };
-  
-   // Sincronizar carrito al iniciar sesión
-   const syncCartAfterLogin = async (userId) => {
+
+  // Sync cart after login
+  const syncCartAfterLogin = async (userId) => {
     const localCart = JSON.parse(localStorage.getItem("cart")) || [];
     for (const item of localCart) {
       await addToCart(userId, item.productId, item.quantity);
     }
-    localStorage.removeItem("cart"); 
+    localStorage.removeItem("cart");
     const count = await getCartCount(userId);
     setCartCount(count);
   };
 
-    // Agregar producto al carrito y actualizar el badge sin recargar
-    const addToCart = async (userId, productId, selectedConfig, price, quantity = 1) => {
-      try {
-        if (userId) {
-          const cartRef = collection(db, 'carts');
-          const q = query(
-            cartRef,
-            where('userId', '==', userId),
-            where('productId', '==', productId)
-          );
-          const querySnapshot = await getDocs(q);
-    
-          let existingCartItem = null;
-    
-          // Buscar si ya existe con la misma configuración
-          querySnapshot.forEach((doc) => {
-            const itemData = doc.data();
-            if (JSON.stringify(itemData.config) === JSON.stringify(selectedConfig)) {
-              existingCartItem = { id: doc.id, ...itemData };
-            }
-          });
-    
-          if (existingCartItem) {
-            // Si ya existe con la misma configuración, actualizar la cantidad
-            await updateDoc(doc(db, 'carts', existingCartItem.id), {
-              quantity: existingCartItem.quantity + quantity
-            });
-          } else {
-            // Si no existe, agregarlo con el precio correcto
-            await addDoc(cartRef, {
-              userId,
-              productId,
-              config: selectedConfig,
-              quantity,
-              price // Guardar el precio correcto según la configuración
-            });
-          }
-    
-          // 🔄 Actualizar el estado del carrito inmediatamente sin recargar
-          setCartCount(prevCount => prevCount + quantity);
-        } else {
-          // 🔴 Manejo del carrito cuando el usuario NO está autenticado
-          const cart = JSON.parse(localStorage.getItem("cart")) || [];
-          const itemIndex = cart.findIndex(
-            item => item.productId === productId && JSON.stringify(item.config) === JSON.stringify(selectedConfig)
-          );
-    
-          if (itemIndex !== -1) {
-            cart[itemIndex].quantity += quantity;
-          } else {
-            cart.push({ productId, config: selectedConfig, quantity, price });
-          }
-    
-          localStorage.setItem("cart", JSON.stringify(cart));
-          
-          // 🔄 Actualizar el badge del carrito en tiempo real
-          setCartCount(cart.reduce((acc, item) => acc + item.quantity, 0));
-        }
-      } catch (err) {
-        console.error("Error al agregar al carrito:", err);
-      }
-    };
-    
-    
-    
- // Eliminar producto del carrito y actualizar el badge sin recargar
- const removeFromCart = async (cartItemId) => {
-  try {
-    await deleteDoc(doc(db, "carts", cartItemId));
-    console.log("Producto eliminado del carrito:", cartItemId);
-
-    if (user) {
-      const count = await getCartCount(user.uid);
-      setCartCount(count); // Actualiza el badge después de eliminar
-    }
-  } catch (err) {
-    console.error("Error eliminando el producto del carrito:", err);
-  }
-};
   // Add to wishlist
   const addToWishlist = async (userId, productId) => {
     try {
@@ -271,11 +297,14 @@ const getCartCount = async (userId) => {
     loading,
     error,
     getProduct,
+    addProduct,
+    updateProduct,
+    deleteProduct,
     getCartCount,
     addToCart,
     getCart,
-  updateCartItem,
-  removeFromCart,
+    updateCartItem,
+    removeFromCart,
     clearCart,
     addToWishlist,
     cartCount,

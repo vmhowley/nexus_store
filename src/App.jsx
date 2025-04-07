@@ -15,6 +15,8 @@ import Cart from './pages/Cart';
 import Cart1 from './pages/Cart1';
 import ScrollToTop from "./ScrollToTop";
 import { CartProvider } from './context/CartProvider';
+import Admin from './pages/Admin';
+
 
 function App() {
   return (
@@ -37,6 +39,7 @@ function App() {
             <Route path="/enterprise" element={<Enterprise />} />
             <Route path="/support" element={<Support />} />
             <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/admin" element={<Admin />} />
           </Routes>
           <footer className="bg-dark text-accent py-12 border-t border-lime-500/20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
