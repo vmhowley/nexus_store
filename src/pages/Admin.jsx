@@ -59,6 +59,7 @@ export default function Admin() {
       const newOrders = [];
       
       snapshot.docChanges().forEach((change) => {
+        console.log(change)
         if (change.type === "added") {
           const order = {
             id: change.doc.id,
@@ -249,7 +250,7 @@ export default function Admin() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen pt-20 bg-gray-900">
       {/* Order Alert */}
       {newOrderAlert && (
         <div className="fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 animate-bounce">
