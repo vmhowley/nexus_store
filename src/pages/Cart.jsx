@@ -1,8 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Trash2, MinusCircle, PlusCircle, CreditCard, ShoppingCart } from 'lucide-react';
-import { useFirebase } from '../context/FirebaseContext';
-import { auth } from '../firebase/config';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Trash2,
+  MinusCircle,
+  PlusCircle,
+  CreditCard,
+  ShoppingCart,
+} from "lucide-react";
+import { useFirebase } from "../context/FirebaseContext";
+import { auth } from "../firebase/config";
+import { addDoc, collection } from 'firebase/firestore';
+import { db } from '../firebase/config';
 
 export default function Cart() {
   const navigate = useNavigate();
@@ -10,6 +18,7 @@ export default function Cart() {
   const [cartItems, setCartItems] = useState([]);
   const [cartData, setCartData] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [docRef, setDocRef] = useState();
   const [error, setError] = useState(null);
 
   const fetchCart = async () => {
@@ -17,18 +26,18 @@ export default function Cart() {
       setLoading(false);
       return;
     }
-  
+
     try {
       const cartData = await getCart(auth.currentUser.uid);
       const detailedCart = await Promise.all(
         cartData.map(async (item) => {
           const product = await getProduct(item.productId);
-          console.log(cartData)
-          return { 
-            ...item, 
-            ...product, 
+          console.log(cartData);
+          return {
+            ...item,
+            ...product,
             cartId: item.id,
-            selectedConfigs: item.selectedConfigs || {} 
+            selectedConfigs: item.selectedConfigs || {},
           };
         })
       );
@@ -50,30 +59,30 @@ export default function Cart() {
 
   const calculateItemTotal = (item) => {
     let configTotal = 0;
-    
+
     // Calculate additional costs from selected configurations
     if (item.config) {
       // Add processor cost if selected
       if (item.config.processors) {
-        const processor = item.config.processors
-         configTotal += processor.price;
+        const processor = item.config.processors;
+        configTotal += processor.price;
       }
 
       // Add GPU cost if selected
       if (item.config.gpu) {
-        const gpu = item.config.gpu
+        const gpu = item.config.gpu;
         if (gpu) configTotal += gpu.price;
       }
 
       // Add RAM cost if selected
       if (item.config.ram) {
-        const ram = item.config.ram
+        const ram = item.config.ram;
         if (ram) configTotal += ram.price;
       }
 
       // Add storage cost if selected
       if (item.config.storage) {
-        const storage = item.config.storage
+        const storage = item.config.storage;
         if (storage) configTotal += storage.price;
       }
     }
@@ -104,12 +113,15 @@ export default function Cart() {
       await removeFromCart(cartId);
       setCartItems(cartItems.filter((item) => item.cartId !== cartId));
     } catch (err) {
-      console.error('Error removing item:', err);
+      console.error("Error removing item:", err);
     }
   };
 
   // Calculate totals
-  const subtotal = cartItems.reduce((sum, item) => sum + calculateItemTotal(item), 0);
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + calculateItemTotal(item),
+    0
+  );
   const tax = subtotal * 0.03;
   const total = subtotal + tax;
 
@@ -120,6 +132,41 @@ export default function Cart() {
       </div>
     );
   }
+  const handleCheckout = async () => {
+    if (!auth.currentUser) return;
+
+    try {
+      // Guardar orden en Firestore
+     const docRef = await addDoc(collection(db, "orders"), {
+        userId: auth.currentUser.uid,
+        items: cartItems.map((item) => ({
+          productId: item.cartId,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          selectedConfigs: item.config,
+          total: calculateItemTotal(item),
+        })),
+        subtotal,
+        tax,
+        total,
+        status: "pending",
+        createdAt: new Date(),
+      });
+      setDocRef(docRef.id); // Guardar referencia del documento
+      // Limpiar carrito
+      for (const item of cartItems) {
+        await removeFromCart(item.cartId);
+      }
+      setCartItems([]);
+
+      // Redirigir
+      navigate(`/order-success/${docRef.id}`);
+    } catch (error) {
+      console.error("Error al hacer checkout:", error);
+      alert("Hubo un problema al procesar tu orden. Intenta de nuevo.");
+    }
+  };
 
   if (!auth.currentUser) {
     return (
@@ -127,11 +174,15 @@ export default function Cart() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <ShoppingCart className="h-16 w-16 text-purple-500 mx-auto mb-6" />
-            <h1 className="text-3xl font-bold text-dark mb-4">Your Cart is Waiting</h1>
-            <p className="text-dark mb-8">Please sign in to view your cart and complete your purchase.</p>
-            <button 
+            <h1 className="text-3xl font-bold text-dark mb-4">
+              Your Cart is Waiting
+            </h1>
+            <p className="text-dark mb-8">
+              Please sign in to view your cart and complete your purchase.
+            </p>
+            <button
               className="bg-primary hover:bg-secondary text-dark px-8 py-3 rounded-full text-lg font-medium transition-colors"
-              onClick={() => navigate('/login')}
+              onClick={() => navigate("/login")}
             >
               Sign In
             </button>
@@ -155,11 +206,15 @@ export default function Cart() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <ShoppingCart className="h-16 w-16 text-primary mx-auto mb-6" />
-            <h1 className="text-3xl font-bold text-light mb-4">Your Cart is Empty</h1>
-            <p className="text-dark mb-8">Start adding some awesome products to your cart!</p>
-            <button 
+            <h1 className="text-3xl font-bold text-light mb-4">
+              Your Cart is Empty
+            </h1>
+            <p className="text-dark mb-8">
+              Start adding some awesome products to your cart!
+            </p>
+            <button
               className="bg-primary hover:bg-secondary text-dark px-8 py-3 rounded-full text-lg font-medium transition-colors"
-              onClick={() => navigate('/products')}
+              onClick={() => navigate("/products")}
             >
               Browse Products
             </button>
@@ -180,27 +235,47 @@ export default function Cart() {
               {cartItems.map((item) => {
                 const itemTotal = calculateItemTotal(item);
                 if (!itemTotal) return null; // Skip if itemTotal is undefined or null
-              
+
                 return (
-                  <div key={item.id} className="bg-light rounded-xl p-6 border border-accent/20">
+                  <div
+                    key={item.cartId}
+                    className="bg-light rounded-xl p-6 border border-accent/20"
+                  >
                     <div className="flex items-center gap-6">
-                      <img 
-                        src={item.images[0]} 
-                        alt={item.name} 
+                      <img
+                        src={item.images[0]}
+                        alt={item.name}
                         className="w-24 h-24 object-cover rounded-lg"
                       />
                       <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-dark mb-2">{item.name}</h3>
+                        <h3 className="text-lg font-semibold text-dark mb-2">
+                          {item.name}
+                        </h3>
                         {/* <p className="text-dark text-sm mb-2">
                           Base price: ${item.price}
                         
                         </p> */}
                         {item.config && (
                           <div className="text-dark font-semibold text-xs mb-2 flex  line-clamp-1 gap-1">
-                            <p>{item.config.processors ? item.config.processors.name : 'None'}</p>|
-                            <p>{item.config.gpu ? item.config.gpu.name : 'None'}</p>|
-                            <p>{item.config.ram ? item.config.ram.name : 'None'}</p>|
-                            <p>{item.config.storage ? item.config.storage.name : 'None'}</p>
+                            <p>
+                              {item.config.processors
+                                ? item.config.processors.name
+                                : "None"}
+                            </p>
+                            |
+                            <p>
+                              {item.config.gpu ? item.config.gpu.name : "None"}
+                            </p>
+                            |
+                            <p>
+                              {item.config.ram ? item.config.ram.name : "None"}
+                            </p>
+                            |
+                            <p>
+                              {item.config.storage
+                                ? item.config.storage.name
+                                : "None"}
+                            </p>
                           </div>
                         )}
                         <p className="text-dark text-sm mb-2">
@@ -208,15 +283,15 @@ export default function Cart() {
                         </p>
 
                         <div className="flex items-center gap-4">
-                          <button 
-                            onClick={() => updateQuantity(item.cartId, -1)} 
+                          <button
+                            onClick={() => updateQuantity(item.cartId, -1)}
                             className="text-dark hover:text-purple-500 transition-colors"
                           >
                             <MinusCircle className="h-5 w-5" />
                           </button>
                           <span className="text-dark">{item.quantity}</span>
-                          <button 
-                            onClick={() => updateQuantity(item.cartId, 1)} 
+                          <button
+                            onClick={() => updateQuantity(item.cartId, 1)}
                             className="text-dark hover:text-purple-500 transition-colors"
                           >
                             <PlusCircle className="h-5 w-5" />
@@ -227,8 +302,8 @@ export default function Cart() {
                         <p className="text-xl font-bold text-dark mb-2">
                           ${itemTotal.toFixed(2)}
                         </p>
-                        <button 
-                          onClick={() => handleRemoveItem(item.cartId)} 
+                        <button
+                          onClick={() => handleRemoveItem(item.cartId)}
                           className="text-red-500 hover:text-red-600 transition-colors"
                         >
                           <Trash2 className="h-5 w-5" />
@@ -262,10 +337,13 @@ export default function Cart() {
                 </div>
               </div>
 
-              <button className="w-full bg-primary hover:bg-secondary text-dark hover:text-light py-3 rounded-full font-medium transition-colors flex items-center justify-center gap-2">
-                <CreditCard className="h-5 w-5" />
-                Proceed to Checkout
-              </button>
+              <button 
+  onClick={handleCheckout}
+  className="w-full bg-primary hover:bg-secondary text-dark hover:text-light py-3 rounded-full font-medium transition-colors flex items-center justify-center gap-2"
+>
+  <CreditCard className="h-5 w-5" />
+  Proceed to Checkout
+</button>
             </div>
           </div>
         </div>

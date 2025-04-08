@@ -11,6 +11,7 @@ import Login1 from './pages/Login1';
 import Register from './pages/Register';
 import Support from './pages/Support';
 import ProductDetail from './pages/ProductDetail';
+import OrderSuccess from './pages/OrderSuccess';
 import Cart from './pages/Cart';
 import Cart1 from './pages/Cart1';
 import ScrollToTop from "./ScrollToTop";
@@ -38,6 +39,7 @@ function App() {
             <Route path="/products" element={<Products />} />
             <Route path="/enterprise" element={<Enterprise />} />
             <Route path="/support" element={<Support />} />
+            <Route path="order-success/:ssid" element={<OrderSuccess />} />
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/admin" element={<Admin />} />
           </Routes>
