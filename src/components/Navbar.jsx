@@ -39,7 +39,7 @@ export default function Navbar() {
   <text x="50" y="80" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="white">NE</text>
   
   <g transform="translate(120,40)">
-      <path d="M10 0 L50 40" stroke="#2EAF7D" stroke-width="10" stroke-linecap="round"/>
+      <path d="M10 0 L50 40" stroke="#2EAF7D" stroke-width='10' stroke-linecap="round"/>
       <path d="M50 0 L10 40" stroke="#2EAF7D" stroke-width="10" stroke-linecap="round"/>
   </g>
   
@@ -51,14 +51,11 @@ export default function Navbar() {
           </Link>
 
           <div className="hidden md:flex items-center space-x-8">
-            <Link to="/discover" className={isActive("/discover")}>
-              Discover
+            <Link to="/" className={isActive("/discover")}>
+              Home
             </Link>
             <Link to="/products" className={isActive("/products")}>
               Products
-            </Link>
-            <Link to="/pre-build" className={isActive("/pre-build")}>
-              Pre-build
             </Link>
             <Link to="/enterprise" className={isActive("/enterprise")}>
               Enterprise

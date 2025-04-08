@@ -11,8 +11,8 @@ export default function Hero() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <h1 className="text-5xl lg:text-7xl font-bold">
-              <span className="text-white">Next-Gen</span>
-              <span className="block mt-2 bg-linear-to-r from-light to-accent via-light  bg-clip-text text-transparent">
+              <span className="text-light">Next-Gen</span>
+              <span className="block mt-2 bg-linear-to-br from-primary to-secondary via-accent  bg-clip-text text-transparent">
                 Computing
               </span>
             </h1>
@@ -38,15 +38,15 @@ export default function Hero() {
               alt="Premium Gaming PC"
               className="rounded-2xl shadow-2xl shadow-primary/20 hover:shadow-secondary/30 transition-shadow"
             />
-            <div className="absolute -bottom-4 left-4 right-4 bg-gray-800/80 backdrop-blur-xs rounded-xl p-4 border border-lime-500/20">
+            <div className="absolute -bottom-4 left-4 right-4 bg-light/80 backdrop-blur-xs rounded-xl p-4 border border-lime-500/20">
               <div className="flex justify-between items-center">
                 <div>
-                  <h3 className="text-accent font-semibold">NEXUS TITAN PRO</h3>
-                  <p className="text-light text-sm">
+                  <h3 className="text-dark font-semibold">NEXUS TITAN PRO</h3>
+                  <p className="text-dark text-sm">
                     RTX 4090 • i9-13900K • 64GB RAM
                   </p>
                 </div>
-                <span className="text-accent hover:text-primary font-bold">$3,499</span>
+                <span className="text-dark hover:text-primary font-bold">$1,499</span>
               </div>
             </div>
           </div>

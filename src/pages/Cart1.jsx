@@ -76,7 +76,7 @@ export default function Cart() {
 
   if (loading) {
     return (
-      <div className="pt-20 min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="pt-20 min-h-screen bg-dark flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-purple-500"></div>
       </div>
     );
@@ -84,7 +84,7 @@ export default function Cart() {
 
   if (!auth.currentUser) {
     return (
-      <div className="pt-20 min-h-screen bg-gray-900">
+      <div className="pt-20 min-h-screen bg-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <ShoppingCart className="h-16 w-16 text-purple-500 mx-auto mb-6" />
@@ -104,7 +104,7 @@ export default function Cart() {
 
   if (error) {
     return (
-      <div className="pt-20 min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="pt-20 min-h-screen bg-dark flex items-center justify-center">
         <div className="text-red-500">Error loading cart: {error}</div>
       </div>
     );
@@ -112,7 +112,7 @@ export default function Cart() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="pt-20 min-h-screen bg-gray-900">
+      <div className="pt-20 min-h-screen bg-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
             <ShoppingCart className="h-16 w-16 text-purple-500 mx-auto mb-6" />
@@ -131,7 +131,7 @@ export default function Cart() {
   }
 
   return (
-    <div className="pt-20 min-h-screen bg-gray-900">
+    <div className="pt-20 min-h-screen bg-dark">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <h1 className="text-3xl font-bold text-white mb-8">Shopping Cart</h1>
         
@@ -139,7 +139,7 @@ export default function Cart() {
           <div className="lg:col-span-2">
             <div className="space-y-4">
               {cartItems.map((item) => (
-                <div key={item.id} className="bg-gray-800 rounded-xl p-6 border border-purple-500/20">
+                <div key={item.id} className="bg-light rounded-xl p-6 border border-purple-500/20">
                   <div className="flex items-center gap-6">
                     <img 
                       src={item.product.image} 
@@ -183,7 +183,7 @@ export default function Cart() {
           </div>
           
           <div className="lg:col-span-1">
-            <div className="bg-gray-800 rounded-xl p-6 border border-purple-500/20 sticky top-24">
+            <div className="bg-light rounded-xl p-6 border border-purple-500/20 sticky top-24">
               <h2 className="text-xl font-bold text-white mb-6">Order Summary</h2>
               
               <div className="space-y-4 mb-6">

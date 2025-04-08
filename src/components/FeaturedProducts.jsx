@@ -172,7 +172,7 @@ export default function FeaturedProducts() {
     <div className="bg-dark py-24 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-white mb-4">
+          <h2 className="text-4xl font-bold text-light mb-4">
             Featured Builds
           </h2>
           <p className="text-accent max-w-2xl mx-auto">
@@ -220,10 +220,12 @@ export default function FeaturedProducts() {
                     </span>
                   </div>
                 </div>
+                
+                {product.specs.cpu && ( 
+                <>
                 <p className="text-dark mb-1 font-semibold line-clamp-3">
                   Basic Configuration:
                 </p>
-                
                   <div className="flex items-center text-dark">
                     <Cpu className="h-4 w-4 text-primary mr-2" />
                     <span className="text-sm truncate">
@@ -243,8 +245,7 @@ export default function FeaturedProducts() {
                       {product.specs.ram}
                     </span>
                   </div>
-                
-                {product.configurations && (
+
                   <div className="mb-6 ">
                     <button
                       className="mt-3 text-sm text-primary hovertext-secondarytransition-colors cursor-pointer font-semibold"
@@ -262,7 +263,10 @@ export default function FeaturedProducts() {
                       </span>
                     </button>
                   </div>
+                  </>
                 )}
+                {product.specs.cpu === '' && ( 
+                  <h1 className='p-4 mb-2'> {product.description}</h1>)}
 
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold text-primary">

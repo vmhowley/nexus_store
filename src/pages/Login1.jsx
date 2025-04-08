@@ -33,9 +33,9 @@ export default function Login1() {
   };
 
   return (
-    <div className="pt-20 min-h-screen bg-gray-900 flex items-center justify-center px-4">
+    <div className="pt-20 min-h-screen bg-dark flex items-center justify-center px-4">
       <div className="max-w-md w-full">
-        <div className="bg-gray-800 rounded-2xl p-8 border border-purple-500/20">
+        <div className="bg-light rounded-2xl p-8 border border-purple-500/20">
           <div className="text-center mb-8">
             <div className="inline-flex p-4 rounded-full bg-purple-500/10 mb-4">
               {isLogin ? (
@@ -71,7 +71,7 @@ export default function Login1() {
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg py-3 px-4 pl-11 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full bg-dark border border-gray-700 rounded-lg py-3 px-4 pl-11 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
                   placeholder="Enter your email"
                   required
                 />
@@ -89,7 +89,7 @@ export default function Login1() {
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-gray-900 border border-gray-700 rounded-lg py-3 px-4 pl-11 pr-11 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full bg-dark border border-gray-700 rounded-lg py-3 px-4 pl-11 pr-11 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors"
                   placeholder="Enter your password"
                   required
                 />

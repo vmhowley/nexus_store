@@ -21,10 +21,10 @@ const categories = [
 
 export default function Discover() {
   return (
-    <div className="pt-20 bg-gray-900 min-h-screen">
+    <div className="pt-20 bg-dark min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-16">
-          <Compass className="h-16 w-16 text-lime-500 mx-auto mb-6" />
+          <Compass className="h-16 w-16 text-primary mx-auto mb-6" />
           <h1 className="text-4xl font-bold text-white mb-4">Discover Our Range</h1>
           <p className="text-gray-400 max-w-2xl mx-auto">
             Explore our comprehensive collection of high-performance computing solutions designed for every need.
@@ -35,11 +35,11 @@ export default function Discover() {
           {categories.map((category, index) => {
             const Icon = category.icon;
             return (
-              <div key={index} className="bg-gray-800 rounded-2xl p-8 border border-lime-500/20 hover:border-lime-500/40 transition-all">
-                <Icon className="h-12 w-12 text-lime-500 mb-6" />
+              <div key={index} className="bg-light rounded-2xl p-8 border border-lime-500/20 hover:border-lime-500/40 transition-all">
+                <Icon className="h-12 w-12 text-primary mb-6" />
                 <h3 className="text-xl font-bold text-white mb-3">{category.title}</h3>
                 <p className="text-gray-400 mb-6">{category.description}</p>
-                <button className="w-full bg-lime-500/10 hover:bg-lime-500/20 text-lime-500 py-2 rounded-lg transition-colors">
+                <button className="w-full bg-lime-500/10 hover:bg-lime-500/20 text-primary py-2 rounded-lg transition-colors">
                   Learn More
                 </button>
               </div>
@@ -47,7 +47,7 @@ export default function Discover() {
           })}
         </div>
 
-        <div className="bg-gray-800 rounded-2xl p-8 border border-lime-500/20">
+        <div className="bg-light rounded-2xl p-8 border border-lime-500/20">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
               <h2 className="text-3xl font-bold text-white mb-4">Need Help Choosing?</h2>

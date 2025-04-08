@@ -127,7 +127,7 @@ export default function ProductDetail() {
 
             {auth.currentUser && (
               <button
-                className="absolute top-4 right-18 p-3 bg-gray-900/80 backdrop-blur-xs rounded-full hover:bg-primary"
+                className="absolute top-4 right-18 p-3 bg-dark/80 backdrop-blur-xs rounded-full hover:bg-primary"
                 onClick={() => addToWishlist(auth.currentUser.uid, id)}
               >
                 <Heart className="h-6 w-6 text-secondary" />
@@ -157,7 +157,7 @@ export default function ProductDetail() {
                           className={`px-4 py-2 rounded-lg text-sm font-medium ${
                             selectedConfig[category]?.name === option.name
                               ? "bg-primary text-white"
-                              : "bg-gray-800 text-light hover:bg-gray-700"
+                              : "bg-light text-light hover:bg-gray-700"
                           }`}
                           onClick={() => handleConfigChange(category, option)}
                         >
