@@ -250,7 +250,7 @@ export default function Admin() {
   );
 
   return (
-    <div className="min-h-screen pt-20 bg-gray-900">
+    <div className="min-h-screen pt-20 bg-dark">
       {/* Order Alert */}
       {newOrderAlert && (
         <div className="fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 animate-bounce">
@@ -271,10 +271,10 @@ export default function Admin() {
       )}
 
       {/* Orders Panel Toggle */}
-      <div className="fixed top-4 left-4 z-40">
+      <div className="fixed top-20 right-4 z-50 scroll-mb-9">
         <button
           onClick={() => setShowOrdersPanel(!showOrdersPanel)}
-          className="bg-purple-500 hover:bg-purple-600 text-white p-3 rounded-full shadow-lg flex items-center justify-center relative"
+          className="bg-primary hover:bg-secondary text-dark p-3 rounded-full shadow-lg flex items-center justify-center relative"
         >
           <Bell className="h-6 w-6" />
           {orders.length > 0 && (
@@ -287,11 +287,11 @@ export default function Admin() {
 
       {/* Orders Panel */}
       {showOrdersPanel && (
-        <div className="fixed left-4 top-20 bg-gray-800 rounded-lg shadow-xl p-4 w-80 max-h-[80vh] overflow-y-auto z-30">
+        <div className="fixed left-4 top-20 bg-dark rounded-lg shadow-xl p-4 max-h-[80vh] overflow-y-auto z-50">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-bold text-white">Recent Orders</h2>
             <button 
-              onClick={() => setShowOrdersPanel(false)}
+              onClick={() => setShowOrdersPanel(!showOrdersPanel)}
               className="text-gray-400 hover:text-white"
             >
               <X className="h-5 w-5" />

@@ -48,13 +48,15 @@ export default function Cart() {
       setError(err.message);
       setLoading(false);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
-    console.log(auth.currentUser);
     if (auth.currentUser) {
       fetchCart();
     }
+    setLoading(false);
+
   }, [auth.currentUser]);
 
   const calculateItemTotal = (item) => {
@@ -128,7 +130,7 @@ export default function Cart() {
   if (loading) {
     return (
       <div className="pt-20 min-h-screen bg-dark flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-purple-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-pink-500"></div>
       </div>
     );
   }
@@ -173,11 +175,11 @@ export default function Cart() {
       <div className="pt-20 min-h-screen bg-dark">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="text-center">
-            <ShoppingCart className="h-16 w-16 text-purple-500 mx-auto mb-6" />
-            <h1 className="text-3xl font-bold text-dark mb-4">
+            <ShoppingCart className="h-16 w-16 text-primary mx-auto mb-6" />
+            <h1 className="text-3xl font-bold text-light mb-4">
               Your Cart is Waiting
             </h1>
-            <p className="text-dark mb-8">
+            <p className="text-accent mb-8">
               Please sign in to view your cart and complete your purchase.
             </p>
             <button

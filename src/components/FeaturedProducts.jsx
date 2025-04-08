@@ -28,7 +28,7 @@ function ConfigurationModal({ configurations, onClose }) {
           <h3 className="text-xl font-bold text-dark">All Configurations</h3>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-gray-700 rounded-full transition-colors"
+            className="p-2 hover:bg-secondary rounded-full transition-colors"
           >
             <X className="h-5 w-5 text-accent" />
           </button>
