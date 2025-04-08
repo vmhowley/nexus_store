@@ -77,19 +77,37 @@ export default function OrderSuccess() {
               <span>Status:</span>
               <span>{order.status}</span>
             </div>
+          
           </div>
 
           <div className="mt-6">
             <h3 className="text-lg font-semibold text-dark mb-4">Items</h3>
             <div className="space-y-4">
               {order.items.map((item, index) => (
+                <>
                 <div
                   key={index}
                   className="flex justify-between items-center text-dark"
-                >
+                  >
                   <span>{item.name} x {item.quantity}</span>
                   <span>${item.total.toFixed(2)}</span>
+                  
                 </div>
+                <div className="grid justify-between text-dark">
+                <span className="font-bold text-xl tracking-wide text-dark">Specs:</span>
+                <div className="grid grid-cols-2 gap-1">
+                <span>Gpu:</span>
+                <span>{item.selectedConfigs.gpu.name}</span>
+                <span>Cpu:</span>
+                <span>{item.selectedConfigs.processors.name}</span>
+                <span>Ram:</span>
+                <span>{item.selectedConfigs.ram.name}</span>
+                <span>Storage:</span>
+                <span>{item.selectedConfigs.storage.name}</span>
+                
+                </div>
+              </div>
+                  </>
               ))}
             </div>
           </div>

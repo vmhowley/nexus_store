@@ -1,27 +1,29 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { 
   Plus, 
   Edit, 
   Trash2, 
   Search, 
-  Upload, 
   X,
   Save,
-  AlertCircle
+  AlertCircle,
+  Bell,
+  ShoppingBag
 } from 'lucide-react';
 import { useFirebase } from '../context/FirebaseContext';
-import { auth } from '../firebase/config';
+import { auth, db } from '../firebase/config';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 export default function Admin() {
-  const navigate = useNavigate();
   const { products, addProduct, updateProduct, deleteProduct } = useFirebase();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [editingProduct, setEditingProduct] = useState(null);
-
+  const [orders, setOrders] = useState([]);
+  const [newOrderAlert, setNewOrderAlert] = useState(null);
+  const [showOrdersPanel, setShowOrdersPanel] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     brand: '',
@@ -46,11 +48,40 @@ export default function Admin() {
     }
   });
 
-//   useEffect(() => {
-//     if (!auth.currentUser?.email?.includes('admin')) {
-//       navigate('/');
-//     }
-//   }, [auth.currentUser]);
+  // Listen for new orders
+  useEffect(() => {
+    const ordersQuery = query(
+      collection(db, "orders"),
+      orderBy("createdAt", "desc")
+    );
+
+    const unsubscribe = onSnapshot(ordersQuery, (snapshot) => {
+      const newOrders = [];
+      
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "added") {
+          const order = {
+            id: change.doc.id,
+            ...change.doc.data(),
+            createdAt: change.doc.data().createdAt?.toDate()
+          };
+          
+          newOrders.push(order);
+          
+          // Show alert for new orders
+          setNewOrderAlert(order);
+          
+          // Play notification sound
+          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+          audio.play();
+        }
+      });
+
+      setOrders(prevOrders => [...newOrders, ...prevOrders]);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -218,7 +249,85 @@ export default function Admin() {
   );
 
   return (
-    <div className="pt-20 min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-gray-900">
+      {/* Order Alert */}
+      {newOrderAlert && (
+        <div className="fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 animate-bounce">
+          <div className="flex items-center gap-3">
+            <ShoppingBag className="h-6 w-6" />
+            <div>
+              <h3 className="font-bold">New Order Received!</h3>
+              <p className="text-sm">Order #{newOrderAlert.id} - ${newOrderAlert.total.toFixed(2)}</p>
+            </div>
+            <button 
+              onClick={() => setNewOrderAlert(null)}
+              className="ml-4 text-white/80 hover:text-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Orders Panel Toggle */}
+      <div className="fixed top-4 left-4 z-40">
+        <button
+          onClick={() => setShowOrdersPanel(!showOrdersPanel)}
+          className="bg-purple-500 hover:bg-purple-600 text-white p-3 rounded-full shadow-lg flex items-center justify-center relative"
+        >
+          <Bell className="h-6 w-6" />
+          {orders.length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+              {orders.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Orders Panel */}
+      {showOrdersPanel && (
+        <div className="fixed left-4 top-20 bg-gray-800 rounded-lg shadow-xl p-4 w-80 max-h-[80vh] overflow-y-auto z-30">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-white">Recent Orders</h2>
+            <button 
+              onClick={() => setShowOrdersPanel(false)}
+              className="text-gray-400 hover:text-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="space-y-4">
+            {orders.map(order => (
+              <div key={order.id} className="bg-gray-700 rounded-lg p-3">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <h3 className="text-white font-medium">Order #{order.id}</h3>
+                    <p className="text-gray-300 text-sm">User ID: {order.userId}</p>
+                    <p className="text-green-400 font-medium">${order.total.toFixed(2)}</p>
+                  </div>
+                  <span className="text-xs text-gray-400">
+                    {order.createdAt?.toLocaleTimeString()}
+                  </span>
+                </div>
+                <div className="mt-2">
+                  <p className="text-sm text-gray-400">Items:</p>
+                  <ul className="text-sm text-gray-300">
+                    {order.items.map((item, index) => (
+                      <li key={index}>
+                        • {item.quantity}x {item.name} (${item.total.toFixed(2)})
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            ))}
+            {orders.length === 0 && (
+              <p className="text-gray-400 text-center py-4">No orders yet</p>
+            )}
+          </div>
+        </div>
+      )}
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-white">Product Management</h1>
