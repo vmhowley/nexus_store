@@ -88,40 +88,46 @@ export default function ProductDetail() {
     <div className="pt-20 bg-dark min-h-screen px-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <div className="relative mx-auto object-center">
+          <div className="relative  ">
             {product.images.length > 1 && (
               <Slider
-                dots
+              className='rounded-2xl xl:w-[460px] mx-auto'
+                dots={false}
                 infinite
                 speed={500}
                 slidesToShow={1}
                 slidesToScroll={1}
-                style={{ width: '460px', height: '460px' }}
                 arrows
+
               >
                 {product.images.map((img, index) => (
+                    <div className='rounded-2xl' key={index}>
                     <img
                       src={img}
                       alt={product.name}
-                      className=" rounded-2xl  shadow-2xl object-center"
-                      key={index}
+                      className=" rounded-2xl   lg:w-[460px]"
                     />
+                  </div>
 
                 ))}
               </Slider>
             )}
             {product.images.length === 1 && (
+              <div className='rounded-2xl lg:w-[460px] mx-auto'>
+
               <img
                 src={product.images[0]}
                 alt={product.name}
-                className="w-[460px] rounded-2xl shadow-2xl"
+                className="lg:w-[460px] rounded-2xl shadow-2xl"
               />
+              </div>
+
             )}
             {/* Wishlist button */}
 
             {auth.currentUser && (
               <button
-                className="absolute top-4 right-8 p-3 bg-gray-900/80 backdrop-blur-xs rounded-full hover:bg-primary"
+                className="absolute top-4 right-18 p-3 bg-gray-900/80 backdrop-blur-xs rounded-full hover:bg-primary"
                 onClick={() => addToWishlist(auth.currentUser.uid, id)}
               >
                 <Heart className="h-6 w-6 text-secondary" />
