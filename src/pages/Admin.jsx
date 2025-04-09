@@ -174,6 +174,7 @@ return () => unsubscribe();
   };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
+    console.log(name, value)
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -467,7 +468,7 @@ return () => unsubscribe();
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-dark">Product Management</h1>
+          <h1 className="text-3xl font-bold text-light">Product Management</h1>
           <button
             onClick={() => setIsModalOpen(true)}
             className="bg-primary hover:bg-secondary text-dark px-4 py-2 rounded-lg flex items-center gap-2"
@@ -544,7 +545,7 @@ return () => unsubscribe();
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-dark rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-dark">
+                <h2 className="text-2xl font-bold text-light">
                   {editingProduct ? 'Edit Product' : 'Add New Product'}
                 </h2>
                 <button
@@ -569,7 +570,7 @@ return () => unsubscribe();
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-dark mb-2">
+                    <label className="block text-sm font-medium text-light mb-2">
                       Product Name
                     </label>
                     <input
@@ -583,7 +584,7 @@ return () => unsubscribe();
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-dark mb-2">
+                    <label className="block text-sm font-medium text-light mb-2">
                       Brand
                     </label>
                     <input
@@ -597,7 +598,7 @@ return () => unsubscribe();
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-dark mb-2">
+                    <label className="block text-sm font-medium text-light mb-2">
                       Model
                     </label>
                     <input
@@ -611,21 +612,31 @@ return () => unsubscribe();
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-dark mb-2">
+                    <label className="block text-sm font-medium text-light mb-2">
                       Category
                     </label>
-                    <input
+                    <select defaultValue={formData.category} onChange={handleInputChange} className='w-full bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary ' name="category" id="category">
+                      <option value="laptop">Laptop</option>
+                      <option value="desktop">Desktop</option>
+                      <option value="tablet">Tablet</option>
+                      <option value="monitor">Monitor</option>
+                      <option value="accessory">Accessory</option>
+                      <option value="other">Other</option>
+                      <option value="gaming">Gaming</option>
+                      <option value="security">Security</option>
+                    </select>
+                    {/*<input
                       type="text"
                       name="category"
                       value={formData.category}
                       onChange={handleInputChange}
                       className="w-full bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                       required
-                    />
+                    /> */}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-dark mb-2">
+                    <label className="block text-sm font-medium text-light mb-2">
                       Price
                     </label>
                     <input
@@ -639,7 +650,7 @@ return () => unsubscribe();
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-dark mb-2">
+                    <label className="block text-sm font-medium text-light mb-2">
                       Rating
                     </label>
                     <input
@@ -653,7 +664,7 @@ return () => unsubscribe();
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-dark mb-2">
+                  <label className="block text-sm font-medium text-light mb-2">
                     Description
                   </label>
                   <textarea
@@ -667,7 +678,7 @@ return () => unsubscribe();
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-dark mb-2">
+                  <label className="block text-sm font-medium text-light mb-2">
                     Images (URLs)
                   </label>
                   <div className="space-y-2">
@@ -709,7 +720,7 @@ return () => unsubscribe();
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-dark mb-2">
+                  <label className="block text-sm font-medium text-light mb-2">
                     Features
                   </label>
                   <div className="space-y-2">
@@ -743,7 +754,7 @@ return () => unsubscribe();
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-dark mb-2">
+                  <label className="block text-sm font-medium text-light mb-2">
                     Specifications
                   </label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -790,7 +801,7 @@ return () => unsubscribe();
                 <div className="space-y-6">
                   {Object.entries(formData.configurations).map(([type, options]) => (
                     <div key={type}>
-                      <label className="block text-sm font-medium text-dark mb-2 capitalize">
+                      <label className="block text-sm font-medium text-light mb-2 capitalize">
                         {type}
                       </label>
                       <div className="space-y-2">

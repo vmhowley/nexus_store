@@ -140,7 +140,7 @@ export default function ProductDetail() {
               {product.name}
             </h1>
 
-            {product.configurations && (
+            {product.configurations.processors[0].name != '' && (
               <div className="mb-8">
                 <h3 className="text-xl font-bold text-light mb-4">
                   Customize your PC

@@ -112,23 +112,12 @@ export default function FeaturedProducts() {
     }
   };
 
-  const sliderSettings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: true,
-    nextArrow: <CustomArrow direction="next" />,
-    prevArrow: <CustomArrow direction="prev" />,
-    autoplay: true,
-    autoplaySpeed: 5000,
-    pauseOnHover: true,
-    dotsClass: "slick-dots !bottom-4",
-    customPaging: () => (
-      <div className="w-2 h-2 bg-white/50 rounded-full hover:bg-white/80 transition-colors" />
-    )
-  };
+  const groupedByCategory = products.reduce((acc, product) => {
+    const category = product.category || 'Other';
+    if (!acc[category]) acc[category] = [];
+    acc[category].push(product);
+    return acc;
+  }, {});
 
   if (loading) {
     return (
@@ -172,120 +161,109 @@ export default function FeaturedProducts() {
     <div className="bg-dark py-24 min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-light mb-4">
-            Featured Builds
-          </h2>
+          <h2 className="text-4xl font-bold text-light mb-4">Featured Builds</h2>
           <p className="text-accent max-w-2xl mx-auto">
             Experience computing excellence with our carefully curated selection
             of premium pre-built systems.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {products.map((product) => (
-            <div
-              key={product.id}
-              className="bg-light rounded-2xl overflow-hidden border border-primary/20 hover:border-primary/40 transition-all  transform hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/10"
-              // onClick={() => handleProductClick(product.id)}
-            >
-              <div className="relative">
+        {Object.entries(groupedByCategory).map(([category, products]) => (
+          <div key={category} className="mb-16">
+            <h3 className="text-2xl font-bold text-white mb-6 uppercase">{category}</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {products.map((product) => (
                 <div
-                  onClick={() => handleProductClick(product.id)}
-                  className="aspect-[4/3]  cursor-pointer"
+                  key={product.id}
+                  className="bg-light rounded-2xl overflow-hidden border border-primary/20 hover:border-primary/40 transition-all transform hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/10"
                 >
-                  <img
-                    src={product.images?.[0]}
-                    alt={product.name}
-                    className="w-full h-full object-center "
-                  />
-                </div>
-
-                <button
-                  className="absolute top-4 right-4 p-2 bg-dark/80 backdrop-blur-sm rounded-full hover:bg-dark z-10 transition-colors"
-                  onClick={(e) => handleWishlist(e, product.id)}
-                >
-                  <Heart className="h-5 w-5 text-primary" />
-                </button>
-              </div>
-
-              <div className="p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-semibold text-dark line-clamp-2">
-                    {product.name}
-                  </h3>
-                  <div className="flex items-center bg-primary/10 px-2 py-1 rounded-full">
-                    <Star className="h-4 w-4 text-primary fill-current" />
-                    <span className="ml-1 text-primary text-sm font-medium">
-                      {product.rating}
-                    </span>
-                  </div>
-                </div>
-                
-                {product.specs.cpu && ( 
-                <>
-                <p className="text-dark mb-1 font-semibold line-clamp-3">
-                  Base Configuration:
-                </p>
-                  <div className="flex items-center text-dark">
-                    <Cpu className="h-4 w-4 text-primary mr-2" />
-                    <span className="text-sm truncate">
-                      {product.specs.cpu}
-                    </span>
-                  </div>
-                
-                  <div className="flex items-center text-dark">
-                    <MemoryStick className="h-4 w-4 text-primary mr-2" />
-                    <span className="text-sm truncate">
-                      {product.specs.gpu}
-                    </span>
-                  </div>
-                <div className="flex items-center text-dark">
-                    <HardDrive className="h-4 w-4 text-primary mr-2" />
-                    <span className="text-sm truncate">
-                      {product.specs.ram}
-                    </span>
-                  </div>
-
-                  <div className="mb-6 ">
-                    <button
-                      className="mt-3 text-sm text-primary hovertext-secondarytransition-colors cursor-pointer font-semibold"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedConfig(product.configurations);
-                      }}
+                  <div className="relative">
+                    <div
+                      onClick={() => handleProductClick(product.id)}
+                      className="aspect-[4/3] cursor-pointer"
                     >
-                      Available Configurations
-                      <span className="ml-1 text-secondary">
-                        {product.configurations.length}
-                      </span>
-                      <span className="ml-1 text-secondary">
-                        <ChevronRight className="h-4 w-4 inline" />
-                      </span>
+                      <img
+                        src={product.images?.[0]}
+                        alt={product.name}
+                        className="w-full h-full object-center"
+                      />
+                    </div>
+                    <button
+                      className="absolute top-4 right-4 p-2 bg-dark/80 backdrop-blur-sm rounded-full hover:bg-dark z-10 transition-colors"
+                      onClick={(e) => handleWishlist(e, product.id)}
+                    >
+                      <Heart className="h-5 w-5 text-primary" />
                     </button>
                   </div>
-                  </>
-                )}
-                {product.specs.cpu === '' && ( 
-                  <h1 className='font-thin mb-2'> {product.description}</h1>)}
 
-                <div className="flex items-center justify-between">
-                  <span className="text-2xl font-bold text-primary">
-                    ${product.price}
-                  </span>
-                  <button
-                    className="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleProductClick(product.id);
-                    }}
-                  >
-                    Configure
-                  </button>
+                  <div className="p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <h3 className="text-xl font-semibold text-dark line-clamp-2">
+                        {product.name}
+                      </h3>
+                      <div className="flex items-center bg-primary/10 px-2 py-1 rounded-full">
+                        <Star className="h-4 w-4 text-primary fill-current" />
+                        <span className="ml-1 text-primary text-sm font-medium">
+                          {product.rating}
+                        </span>
+                      </div>
+                    </div>
+
+                    {product.specs.cpu ? (
+                      <>
+                        <p className="text-dark mb-1 font-semibold line-clamp-3">
+                          Base Configuration:
+                        </p>
+                        <div className="flex items-center text-dark">
+                          <Cpu className="h-4 w-4 text-primary mr-2" />
+                          <span className="text-sm truncate">{product.specs.cpu}</span>
+                        </div>
+                        <div className="flex items-center text-dark">
+                          <MemoryStick className="h-4 w-4 text-primary mr-2" />
+                          <span className="text-sm truncate">{product.specs.gpu}</span>
+                        </div>
+                        <div className="flex items-center text-dark">
+                          <HardDrive className="h-4 w-4 text-primary mr-2" />
+                          <span className="text-sm truncate">{product.specs.ram}</span>
+                        </div>
+                        <div className="mb-6">
+                          <button
+                            className="mt-3 text-sm text-primary hover:text-secondary transition-colors cursor-pointer font-semibold"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setSelectedConfig(product.configurations);
+                            }}
+                          >
+                            Available Configurations
+                            <span className="ml-1 text-secondary">{product.configurations.length}</span>
+                            <span className="ml-1 text-secondary">
+                              <ChevronRight className="h-4 w-4 inline" />
+                            </span>
+                          </button>
+                        </div>
+                      </>
+                    ) : (
+                      <h1 className="font-thin mb-2">{product.description}</h1>
+                    )}
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-2xl font-bold text-primary">${product.price}</span>
+                      <button
+                        className="bg-primary hover:bg-secondary text-white px-6 py-2 rounded-full text-sm font-medium transition-colors cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleProductClick(product.id);
+                        }}
+                      >
+                        Configure
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
+          </div>
+        ))}
       </div>
 
       {selectedConfig && (
