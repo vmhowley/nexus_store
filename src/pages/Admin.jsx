@@ -253,7 +253,7 @@ export default function Admin() {
     <div className="min-h-screen pt-20 bg-dark">
       {/* Order Alert */}
       {newOrderAlert && (
-        <div className="fixed top-4 right-4 bg-green-500 text-white p-4 rounded-lg shadow-lg z-50 animate-bounce">
+        <div className="fixed top-4 right-4 bg-green-500 text-dark p-4 rounded-lg shadow-lg z-50 animate-bounce">
           <div className="flex items-center gap-3">
             <ShoppingBag className="h-6 w-6" />
             <div>
@@ -262,7 +262,7 @@ export default function Admin() {
             </div>
             <button 
               onClick={() => setNewOrderAlert(null)}
-              className="ml-4 text-white/80 hover:text-white"
+              className="ml-4 text-dark/80 hover:text-dark"
             >
               <X className="h-5 w-5" />
             </button>
@@ -278,7 +278,7 @@ export default function Admin() {
         >
           <Bell className="h-6 w-6" />
           {orders.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+            <span className="absolute -top-1 -right-1 bg-red-500 text-dark text-xs w-5 h-5 rounded-full flex items-center justify-center">
               {orders.length}
             </span>
           )}
@@ -289,30 +289,30 @@ export default function Admin() {
       {showOrdersPanel && (
         <div className="fixed left-4 top-20 bg-dark rounded-lg shadow-xl p-4 max-h-[80vh] overflow-y-auto z-50">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-white">Recent Orders</h2>
+            <h2 className="text-xl font-bold text-dark">Recent Orders</h2>
             <button 
               onClick={() => setShowOrdersPanel(!showOrdersPanel)}
-              className="text-gray-400 hover:text-white"
+              className="text-light hover:text-secondary"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
           <div className="space-y-4">
             {orders.map(order => (
-              <div key={order.id} className="bg-gray-700 rounded-lg p-3">
+              <div key={order.id} className="bg-light rounded-lg p-3">
                 <div className="flex justify-between items-start">
                   <div>
-                    <h3 className="text-white font-medium">Order #{order.id}</h3>
-                    <p className="text-gray-300 text-sm">User ID: {order.userId}</p>
-                    <p className="text-green-400 font-medium">${order.total.toFixed(2)}</p>
+                    <h3 className="text-dark font-medium">Order #{order.id}</h3>
+                    <p className="text-dark text-sm">User ID: {order.userId}</p>
+                    <p className="text-primary font-medium">${order.total.toFixed(2)}</p>
                   </div>
                   <span className="text-xs text-gray-400">
                     {order.createdAt?.toLocaleTimeString()}
                   </span>
                 </div>
                 <div className="mt-2">
-                  <p className="text-sm text-gray-400">Items:</p>
-                  <ul className="text-sm text-gray-300">
+                  <p className="text-sm text-dark">Items:</p>
+                  <ul className="text-sm text-dark">
                     {order.items.map((item, index) => (
                       <li key={index}>
                         • {item.quantity}x {item.name} (${item.total.toFixed(2)})
@@ -331,10 +331,10 @@ export default function Admin() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="flex justify-between items-center mb-8">
-          <h1 className="text-3xl font-bold text-white">Product Management</h1>
+          <h1 className="text-3xl font-bold text-dark">Product Management</h1>
           <button
             onClick={() => setIsModalOpen(true)}
-            className="bg-purple-500 hover:bg-purple-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+            className="bg-primary hover:bg-secondary text-dark px-4 py-2 rounded-lg flex items-center gap-2"
           >
             <Plus className="h-5 w-5" />
             Add Product
@@ -348,25 +348,25 @@ export default function Admin() {
             placeholder="Search products..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full bg-light text-white pl-10 pr-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-purple-500"
+            className="w-full bg-light text-dark pl-10 pr-4 py-2 rounded-lg border border-gray-700 focus:outline-none focus:border-primary"
           />
         </div>
 
         <div className="bg-light rounded-xl overflow-hidden">
           <table className="w-full">
             <thead>
-              <tr className="bg-gray-700">
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Product</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Brand</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Model</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Category</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Price</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+              <tr className="bg-light">
+                <th className="px-6 py-3 text-left text-xs font-medium text-dark uppercase tracking-wider">Product</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-dark uppercase tracking-wider">Brand</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-dark uppercase tracking-wider">Model</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-dark uppercase tracking-wider">Category</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-dark uppercase tracking-wider">Price</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-dark uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
               {filteredProducts.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-700">
+                <tr key={product.id} className="hover:bg-light">
                   <td className="px-6 py-4">
                     <div className="flex items-center">
                       <img
@@ -374,13 +374,13 @@ export default function Admin() {
                         alt={product.name}
                         className="h-10 w-10 rounded-lg object-cover mr-3"
                       />
-                      <div className="text-sm text-white">{product.name}</div>
+                      <div className="text-sm text-dark">{product.name}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm text-white">{product.brand}</td>
-                  <td className="px-6 py-4 text-sm text-white">{product.model}</td>
-                  <td className="px-6 py-4 text-sm text-white">{product.category}</td>
-                  <td className="px-6 py-4 text-sm text-white">${product.price}</td>
+                  <td className="px-6 py-4 text-sm text-dark">{product.brand}</td>
+                  <td className="px-6 py-4 text-sm text-dark">{product.model}</td>
+                  <td className="px-6 py-4 text-sm text-dark">{product.category}</td>
+                  <td className="px-6 py-4 text-sm text-dark">${product.price}</td>
                   <td className="px-6 py-4 text-sm">
                     <div className="flex space-x-3">
                       <button
@@ -406,9 +406,9 @@ export default function Admin() {
         {/* Product Form Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-light rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
+            <div className="bg-dark rounded-xl p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-white">
+                <h2 className="text-2xl font-bold text-dark">
                   {editingProduct ? 'Edit Product' : 'Add New Product'}
                 </h2>
                 <button
@@ -417,7 +417,7 @@ export default function Admin() {
                     setEditingProduct(null);
                     setError(null);
                   }}
-                  className="text-gray-400 hover:text-white"
+                  className="text-gray-400 hover:text-dark"
                 >
                   <X className="h-6 w-6" />
                 </button>
@@ -433,7 +433,7 @@ export default function Admin() {
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-dark mb-2">
                       Product Name
                     </label>
                     <input
@@ -441,13 +441,13 @@ export default function Admin() {
                       name="name"
                       value={formData.name}
                       onChange={handleInputChange}
-                      className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                      className="w-full bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-dark mb-2">
                       Brand
                     </label>
                     <input
@@ -455,13 +455,13 @@ export default function Admin() {
                       name="brand"
                       value={formData.brand}
                       onChange={handleInputChange}
-                      className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                      className="w-full bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-dark mb-2">
                       Model
                     </label>
                     <input
@@ -469,13 +469,13 @@ export default function Admin() {
                       name="model"
                       value={formData.model}
                       onChange={handleInputChange}
-                      className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                      className="w-full bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-dark mb-2">
                       Category
                     </label>
                     <input
@@ -483,13 +483,13 @@ export default function Admin() {
                       name="category"
                       value={formData.category}
                       onChange={handleInputChange}
-                      className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                      className="w-full bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-dark mb-2">
                       Price
                     </label>
                     <input
@@ -497,13 +497,13 @@ export default function Admin() {
                       name="price"
                       value={formData.price}
                       onChange={handleInputChange}
-                      className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                      className="w-full bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                    <label className="block text-sm font-medium text-dark mb-2">
                       Rating
                     </label>
                     <input
@@ -511,13 +511,13 @@ export default function Admin() {
                       name="rating"
                       value={formData.rating}
                       onChange={handleInputChange}
-                      className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                      className="w-full bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-dark mb-2">
                     Description
                   </label>
                   <textarea
@@ -525,13 +525,13 @@ export default function Admin() {
                     value={formData.description}
                     onChange={handleInputChange}
                     rows="4"
-                    className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                    className="w-full bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-dark mb-2">
                     Images (URLs)
                   </label>
                   <div className="space-y-2">
@@ -545,7 +545,7 @@ export default function Admin() {
                             newImages[index] = e.target.value;
                             setFormData(prev => ({ ...prev, images: newImages }));
                           }}
-                          className="flex-1 bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                          className="flex-1 bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                         />
                         <button
                           type="button"
@@ -564,7 +564,7 @@ export default function Admin() {
                     <button
                       type="button"
                       onClick={() => setFormData(prev => ({ ...prev, images: [...prev.images, ''] }))}
-                      className="text-purple-500 hover:text-purple-400 flex items-center gap-2"
+                      className="text-accent hover:text-accent flex items-center gap-2"
                     >
                       <Plus className="h-4 w-4" />
                       Add Image URL
@@ -573,7 +573,7 @@ export default function Admin() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-dark mb-2">
                     Features
                   </label>
                   <div className="space-y-2">
@@ -583,7 +583,7 @@ export default function Admin() {
                           type="text"
                           value={feature}
                           onChange={(e) => handleFeatureChange(index, e.target.value)}
-                          className="flex-1 bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                          className="flex-1 bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                           placeholder="Enter a feature"
                         />
                         <button
@@ -598,7 +598,7 @@ export default function Admin() {
                     <button
                       type="button"
                       onClick={addFeature}
-                      className="text-purple-500 hover:text-purple-400 flex items-center gap-2"
+                      className="text-accent hover:text-accent flex items-center gap-2"
                     >
                       <Plus className="h-4 w-4" />
                       Add Feature
@@ -607,7 +607,7 @@ export default function Admin() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">
+                  <label className="block text-sm font-medium text-dark mb-2">
                     Specifications
                   </label>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -617,7 +617,7 @@ export default function Admin() {
                         value={formData.specs.cpu}
                         onChange={(e) => handleSpecsChange('cpu', e.target.value)}
                         placeholder="CPU"
-                        className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                        className="w-full bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                       />
                     </div>
                     <div>
@@ -626,7 +626,7 @@ export default function Admin() {
                         value={formData.specs.gpu}
                         onChange={(e) => handleSpecsChange('gpu', e.target.value)}
                         placeholder="GPU"
-                        className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                        className="w-full bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                       />
                     </div>
                     <div>
@@ -635,7 +635,7 @@ export default function Admin() {
                         value={formData.specs.ram}
                         onChange={(e) => handleSpecsChange('ram', e.target.value)}
                         placeholder="RAM"
-                        className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                        className="w-full bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                       />
                     </div>
                     <div>
@@ -644,7 +644,7 @@ export default function Admin() {
                         value={formData.specs.disk}
                         onChange={(e) => handleSpecsChange('disk', e.target.value)}
                         placeholder="Storage"
-                        className="w-full bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                        className="w-full bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                       />
                     </div>
                   </div>
@@ -654,7 +654,7 @@ export default function Admin() {
                 <div className="space-y-6">
                   {Object.entries(formData.configurations).map(([type, options]) => (
                     <div key={type}>
-                      <label className="block text-sm font-medium text-gray-300 mb-2 capitalize">
+                      <label className="block text-sm font-medium text-dark mb-2 capitalize">
                         {type}
                       </label>
                       <div className="space-y-2">
@@ -665,14 +665,14 @@ export default function Admin() {
                               value={option.name}
                               onChange={(e) => handleConfigChange(type, index, 'name', e.target.value)}
                               placeholder="Name"
-                              className="flex-1 bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                              className="flex-1 bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                             />
                             <input
                               type="number"
                               value={option.price}
                               onChange={(e) => handleConfigChange(type, index, 'price', parseFloat(e.target.value))}
                               placeholder="Price"
-                              className="w-32 bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-purple-500"
+                              className="w-32 bg-light text-dark px-4 py-2 rounded-lg border border-gray-600 focus:outline-none focus:border-primary"
                             />
                             <button
                               type="button"
@@ -686,7 +686,7 @@ export default function Admin() {
                         <button
                           type="button"
                           onClick={() => addConfigOption(type)}
-                          className="text-purple-500 hover:text-purple-400 flex items-center gap-2"
+                          className="text-accent hover:text-accent flex items-center gap-2"
                         >
                           <Plus className="h-4 w-4" />
                           Add {type} Option
@@ -703,14 +703,14 @@ export default function Admin() {
                       setIsModalOpen(false);
                       setEditingProduct(null);
                     }}
-                    className="px-4 py-2 text-gray-300 hover:text-white"
+                    className="px-4 py-2 text-dark hover:text-dark"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={loading}
-                    className="bg-purple-500 hover:bg-purple-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 disabled:opacity-50"
+                    className="bg-primary hover:bg-secondary text-dark px-6 py-2 rounded-lg flex items-center gap-2 disabled:opacity-50"
                   >
                     {loading ? (
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />

@@ -210,7 +210,7 @@ export default function FeaturedProducts() {
 
               <div className="p-6">
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-bold text-dark line-clamp-2">
+                  <h3 className="text-xl font-semibold text-dark line-clamp-2">
                     {product.name}
                   </h3>
                   <div className="flex items-center bg-primary/10 px-2 py-1 rounded-full">
@@ -224,7 +224,7 @@ export default function FeaturedProducts() {
                 {product.specs.cpu && ( 
                 <>
                 <p className="text-dark mb-1 font-semibold line-clamp-3">
-                  Basic Configuration:
+                  Base Configuration:
                 </p>
                   <div className="flex items-center text-dark">
                     <Cpu className="h-4 w-4 text-primary mr-2" />
@@ -266,7 +266,7 @@ export default function FeaturedProducts() {
                   </>
                 )}
                 {product.specs.cpu === '' && ( 
-                  <h1 className='p-4 mb-2'> {product.description}</h1>)}
+                  <h1 className='font-thin mb-2'> {product.description}</h1>)}
 
                 <div className="flex items-center justify-between">
                   <span className="text-2xl font-bold text-primary">

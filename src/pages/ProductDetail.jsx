@@ -157,7 +157,7 @@ export default function ProductDetail() {
                           className={`px-4 py-2 rounded-lg text-sm font-medium ${
                             selectedConfig[category]?.name === option.name
                               ? "bg-primary text-white"
-                              : "bg-light text-light hover:bg-gray-700"
+                              : "bg-light text-dark hover:bg-secondary hover:text-light"
                           }`}
                           onClick={() => handleConfigChange(category, option)}
                         >
