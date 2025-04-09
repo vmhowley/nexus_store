@@ -32,7 +32,8 @@ export function FirebaseProvider({ children }) {
     return () => unsubscribe();
   }, []);
 
-  // Fetch all products
+
+ // Fetch all products
   const fetchProducts = async () => {
     try {
       const querySnapshot = await getDocs(collection(db, 'products'));
@@ -99,6 +100,21 @@ export function FirebaseProvider({ children }) {
     }
   };
 
+  // Update order status
+  const updateOrderStatus = async (orderId, status) => {
+    try {
+      const orderRef = doc(db, "orders", orderId);
+      await updateDoc(orderRef, {
+        status,
+        completedAt: status === 'done' ? new Date() : null
+      });
+      return true;
+    } catch (err) {
+      console.error("Error updating order status:", err);
+      throw new Error(err.message);
+    }
+  };
+
   // Get cart items
   const getCart = async (userId) => {
     try {
@@ -115,7 +131,6 @@ export function FirebaseProvider({ children }) {
     }
   };
 
-  // Update cart item
   const updateCartItem = async (userId, cartItemId, newQuantity) => {
     try {
       const cartItemRef = doc(db, "carts", cartItemId);
@@ -127,7 +142,6 @@ export function FirebaseProvider({ children }) {
     setCartCount(count);
   };
 
-  // Clear cart
   const clearCart = async (userId) => {
     try {
       const cartRef = collection(db, "carts");
@@ -142,7 +156,6 @@ export function FirebaseProvider({ children }) {
     }
   };
 
-  // Get cart count
   const getCartCount = async (userId) => {
     try {
       const cartRef = collection(db, "carts");
@@ -161,7 +174,6 @@ export function FirebaseProvider({ children }) {
     }
   };
 
-  // Add to cart
   const addToCart = async (userId, productId, selectedConfig, price, quantity = 1) => {
     try {
       if (userId) {
@@ -217,7 +229,6 @@ export function FirebaseProvider({ children }) {
     }
   };
 
-  // Remove from cart
   const removeFromCart = async (cartItemId) => {
     try {
       await deleteDoc(doc(db, "carts", cartItemId));
@@ -231,7 +242,6 @@ export function FirebaseProvider({ children }) {
       console.error("Error eliminando el producto del carrito:", err);
     }
   };
-
   // Authentication functions
   const register = async (email, password) => {
     try {
@@ -309,6 +319,7 @@ export function FirebaseProvider({ children }) {
     addToWishlist,
     cartCount,
     setCartCount,
+    updateOrderStatus,
     fetchProducts
   };
 

@@ -8,14 +8,16 @@ import {
   Save,
   AlertCircle,
   Bell,
-  ShoppingBag
+  ShoppingBag,
+  CheckCircle,
+  Clock
 } from 'lucide-react';
 import { useFirebase } from '../context/FirebaseContext';
 import { auth, db } from '../firebase/config';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 
 export default function Admin() {
-  const { products, addProduct, updateProduct, deleteProduct } = useFirebase();
+  const { products, addProduct, updateProduct, deleteProduct, updateOrderStatus } = useFirebase();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -47,9 +49,71 @@ export default function Admin() {
       storage: [{ name: '', price: 0 }]
     }
   });
+  const [updatingOrderId, setUpdatingOrderId] = useState(null);
 
-  // Listen for new orders
-  useEffect(() => {
+  
+
+  const handleCanvas = (e) => {
+    e.preventDefault();
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext("2d");
+
+    canvas.style.background = "#02353C"
+    const baselinesAboveAlphabetic = [
+      "fontBoundingBoxAscent",
+      "actualBoundingBoxAscent",
+      "emHeightAscent",
+      "hangingBaseline",
+    ];
+    const baselinesBelowAlphabetic = [
+      "ideographicBaseline",
+      "emHeightDescent",
+      "actualBoundingBoxDescent",
+      "fontBoundingBoxDescent",
+    ];
+    const baselines = [...baselinesAboveAlphabetic, ...baselinesBelowAlphabetic];
+    ctx.font = "25px serif";
+    ctx.strokeStyle = "red";
+    
+    baselines.forEach((baseline, index) => {
+      const text = 'NEXUS';
+      ctx.fillStyle = "white";
+      // const textMetrics = ctx.measureText(text);
+      
+      const x = 20 +index * 20;
+      const y = 50 + index * 50;
+      ctx.beginPath();
+      ctx.font = "30px serif";
+      ctx.fillText(text, x, y-5);
+      let pos = products[0].model.search(" ")
+      console.log(pos)
+      const model = products[0].model.slice(0, pos);
+      const model2 = products[0].model.slice(pos);
+      console.log(model)
+      const text1 = model;
+      ctx.font = "40px serif";
+      ctx.fillText(text1, x, y+60);
+      
+      ctx.fillStyle = "red";
+      ctx.fillRect(x, y+85, 100, parseInt("40px serif", 10));
+      ctx.font = "30px serif";
+      ctx.fillStyle = "white";
+      const text2 = model2;
+      ctx.fillText(text2, x, y+118);
+      ctx.fillRect(0, y+150, 500, parseInt("200px serif", 10));
+      
+      const baselineMetricValue = textMetrics[baseline];
+      if (baselineMetricValue === undefined) {
+        return;
+      }
+
+  
+    });
+  }
+
+
+   // Listen for new orders
+   useEffect(() => {
     const ordersQuery = query(
       collection(db, "orders"),
       orderBy("createdAt", "desc")
@@ -59,31 +123,55 @@ export default function Admin() {
       const newOrders = [];
       
       snapshot.docChanges().forEach((change) => {
-        console.log(change)
-        if (change.type === "added") {
+        if (change.type === "added" || change.type === "modified") {
           const order = {
             id: change.doc.id,
             ...change.doc.data(),
-            createdAt: change.doc.data().createdAt?.toDate()
+            createdAt: change.doc.data().createdAt?.toDate(),
+            completedAt: change.doc.data().completedAt?.toDate()
           };
           
-          newOrders.push(order);
-          
-          // Show alert for new orders
-          setNewOrderAlert(order);
-          
-          // Play notification sound
-          const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
-          audio.play();
+          if (change.type === "added") {
+            newOrders.push(order);
+            
+            // Show alert for new pending orders only
+            if (order.status === 'pending') {
+              setNewOrderAlert(order);
+            }
+          }
         }
       });
 
-      setOrders(prevOrders => [...newOrders, ...prevOrders]);
+   // Update orders list, maintaining the existing order for modified documents
+   setOrders(prevOrders => {
+    const updatedOrders = [...prevOrders];
+    newOrders.forEach(newOrder => {
+      const index = updatedOrders.findIndex(o => o.id === newOrder.id);
+      if (index >= 0) {
+        updatedOrders[index] = newOrder;
+      } else {
+        updatedOrders.unshift(newOrder);
+      }
     });
+    return updatedOrders;
+  });
+});
 
-    return () => unsubscribe();
-  }, []);
+return () => unsubscribe();
+}, []);
 
+  const handleOrderStatusUpdate = async (orderId, newStatus) => {
+    try {
+      setUpdatingOrderId(orderId);
+      await updateOrderStatus(orderId, newStatus);
+      // The orders list will be automatically updated by the snapshot listener
+    } catch (error) {
+      console.error('Error updating order status:', error);
+      setError('Failed to update order status');
+    } finally {
+      setUpdatingOrderId(null);
+    }
+  };
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -250,19 +338,20 @@ export default function Admin() {
   );
 
   return (
+   
     <div className="min-h-screen pt-20 bg-dark">
       {/* Order Alert */}
       {newOrderAlert && (
-        <div className="fixed top-4 right-4 bg-green-500 text-dark p-4 rounded-lg shadow-lg z-50 animate-bounce">
+        <div className="fixed top-4 right-4 bg-primary text-white p-4 rounded-lg shadow-lg z-50 animate-bounce">
           <div className="flex items-center gap-3">
             <ShoppingBag className="h-6 w-6" />
             <div>
               <h3 className="font-bold">New Order Received!</h3>
-              <p className="text-sm">Order #{newOrderAlert.id} - ${newOrderAlert.total.toFixed(2)}</p>
+              <p className="text-sm">Order #{newOrderAlert.id.slice(0, 8)} - ${newOrderAlert.total.toFixed(2)}</p>
             </div>
             <button 
               onClick={() => setNewOrderAlert(null)}
-              className="ml-4 text-dark/80 hover:text-dark"
+              className="ml-4 text-white/80 hover:text-white"
             >
               <X className="h-5 w-5" />
             </button>
@@ -271,15 +360,15 @@ export default function Admin() {
       )}
 
       {/* Orders Panel Toggle */}
-      <div className="fixed top-20 right-4 z-50 scroll-mb-9">
+      <div className="fixed top-20 right-4 z-50">
         <button
           onClick={() => setShowOrdersPanel(!showOrdersPanel)}
-          className="bg-primary hover:bg-secondary text-dark p-3 rounded-full shadow-lg flex items-center justify-center relative"
+          className="bg-purple-500 hover:bg-purple-600 text-white p-3 rounded-full shadow-lg flex items-center justify-center relative"
         >
           <Bell className="h-6 w-6" />
-          {orders.length > 0 && (
-            <span className="absolute -top-1 -right-1 bg-red-500 text-dark text-xs w-5 h-5 rounded-full flex items-center justify-center">
-              {orders.length}
+          {orders.filter(o => o.status === 'pending').length > 0 && (
+            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+              {orders.filter(o => o.status === 'pending').length}
             </span>
           )}
         </button>
@@ -287,39 +376,86 @@ export default function Admin() {
 
       {/* Orders Panel */}
       {showOrdersPanel && (
-        <div className="fixed left-4 top-20 bg-dark rounded-lg shadow-xl p-4 max-h-[80vh] overflow-y-auto z-50">
+        <div className="fixed right-4 top-20 bg-gray-800 rounded-lg shadow-xl p-4 w-96 max-h-[80vh] overflow-y-auto z-50">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-dark">Recent Orders</h2>
+            <h2 className="text-xl font-bold text-white">Orders</h2>
             <button 
-              onClick={() => setShowOrdersPanel(!showOrdersPanel)}
-              className="text-light hover:text-secondary"
+              onClick={() => setShowOrdersPanel(false)}
+              className="text-gray-400 hover:text-white"
             >
               <X className="h-5 w-5" />
             </button>
           </div>
           <div className="space-y-4">
             {orders.map(order => (
-              <div key={order.id} className="bg-light rounded-lg p-3">
-                <div className="flex justify-between items-start">
+              <div 
+                key={order.id} 
+                className={`bg-gray-700 rounded-lg p-4 border-l-4 ${
+                  order.status === 'done' ? 'border-green-500' : 'border-yellow-500'
+                }`}
+              >
+                <div className="flex justify-between items-start mb-2">
                   <div>
-                    <h3 className="text-dark font-medium">Order #{order.id}</h3>
-                    <p className="text-dark text-sm">User ID: {order.userId}</p>
-                    <p className="text-primary font-medium">${order.total.toFixed(2)}</p>
+                    <h3 className="text-white font-medium">
+                      Order #{order.id.slice(0, 8)}
+                    </h3>
+                    <p className="text-gray-300 text-sm">
+                      {order.createdAt?.toLocaleString()}
+                    </p>
                   </div>
-                  <span className="text-xs text-gray-400">
-                    {order.createdAt?.toLocaleTimeString()}
-                  </span>
+                  <div className="flex items-center gap-2">
+                    {order.status === 'pending' ? (
+                      <Clock className="h-5 w-5 text-yellow-500" />
+                    ) : (
+                      <CheckCircle className="h-5 w-5 text-green-500" />
+                    )}
+                    <span className={`text-sm ${
+                      order.status === 'done' ? 'text-green-500' : 'text-yellow-500'
+                    }`}>
+                      {order.status === 'done' ? 'Completed' : 'Pending'}
+                    </span>
+                  </div>
                 </div>
-                <div className="mt-2">
-                  <p className="text-sm text-dark">Items:</p>
-                  <ul className="text-sm text-dark">
-                    {order.items.map((item, index) => (
-                      <li key={index}>
-                        • {item.quantity}x {item.name} (${item.total.toFixed(2)})
-                      </li>
-                    ))}
-                  </ul>
+                
+                <div className="space-y-2">
+                  <p className="text-white font-medium">
+                    Total: ${order.total.toFixed(2)}
+                  </p>
+                  <div className="text-sm text-gray-300">
+                    <p className="font-medium mb-1">Items:</p>
+                    <ul className="space-y-1">
+                      {order.items.map((item, index) => (
+                        <li key={index} className="flex justify-between">
+                          <span>{item.quantity}x {item.name}</span>
+                          <span>${item.total.toFixed(2)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
+
+                {order.status === 'pending' && (
+                  <button
+                    onClick={() => handleOrderStatusUpdate(order.id, 'done')}
+                    disabled={updatingOrderId === order.id}
+                    className="mt-4 w-full bg-green-500 hover:bg-green-600 text-white py-2 rounded-lg flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {updatingOrderId === order.id ? (
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white" />
+                    ) : (
+                      <>
+                        <CheckCircle className="h-5 w-5" />
+                        Mark as Complete
+                      </>
+                    )}
+                  </button>
+                )}
+
+                {order.status === 'done' && order.completedAt && (
+                  <p className="mt-2 text-sm text-gray-400">
+                    Completed on: {order.completedAt.toLocaleString()}
+                  </p>
+                )}
               </div>
             ))}
             {orders.length === 0 && (
@@ -726,6 +862,10 @@ export default function Admin() {
             </div>
           </div>
         )}
+        <div className="flex flex-col items-center justify-center mt-10 p-8 bg-light">
+          <button onClick={handleCanvas} >Generate canvas</button>
+          <canvas id='canvas' height="500" width="500"></canvas>
+        </div>
       </div>
     </div>
   );
