@@ -185,7 +185,7 @@ export default function FeaturedProducts() {
                       <img
                         src={product.images?.[0]}
                         alt={product.name}
-                        className="w-full h-full object-center"
+                        className="w-full h-full object-contain bg-white object-center"
                       />
                     </div>
                     <button

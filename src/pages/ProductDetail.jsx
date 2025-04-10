@@ -105,7 +105,7 @@ export default function ProductDetail() {
                     <img
                       src={img}
                       alt={product.name}
-                      className=" rounded-2xl   lg:w-[460px]"
+                      className=" rounded-2xl lg:w-[460px] lg:h-[460px] bg-white"
                     />
                   </div>
 
@@ -118,7 +118,7 @@ export default function ProductDetail() {
               <img
                 src={product.images[0]}
                 alt={product.name}
-                className="lg:w-[460px] rounded-2xl shadow-2xl"
+                className="lg:w-[460px] lg:h-[460px] bg-white rounded-2xl shadow-2xl object-contain object-center"
               />
               </div>
 
