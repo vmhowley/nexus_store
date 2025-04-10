@@ -83,6 +83,21 @@ export default function ProductDetail() {
   if (error || !product) {
     return <div className="pt-20 min-h-screen flex items-center justify-center">Product not found</div>;
   }
+  const settings = {
+    customPaging: function(i) {
+      return (
+        <a>
+          <img src={`${baseUrl}/abstract0${i + 1}.jpg`} />
+        </a>
+      );
+    },
+    dots: true,
+    dotsClass: "slick-dots slick-thumb",
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1
+  };
 
   return (
     <div className="pt-20 bg-dark min-h-screen px-4">
@@ -91,8 +106,9 @@ export default function ProductDetail() {
           <div className="relative  ">
             {product.images.length > 1 && (
               <Slider
+              
               className='rounded-2xl xl:w-[460px] mx-auto'
-                dots={false}
+                dots
                 infinite
                 speed={500}
                 slidesToShow={1}
