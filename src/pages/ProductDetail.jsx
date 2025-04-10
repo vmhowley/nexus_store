@@ -169,6 +169,14 @@ export default function ProductDetail() {
                 ))}
               </div>
             )}
+             {/* Product Description */}
+             {product.description && (
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-light mb-4">Description</h3>
+                <p className="text-light">{product.description}</p>
+              </div>
+            )}
+            
             {/* Product Features */}
             {product.features && (
               <div className="mb-8">
@@ -180,13 +188,7 @@ export default function ProductDetail() {
                 </ul>
               </div>
             )}
-            {/* Product Description */}
-            {product.description && (
-              <div className="mb-8">
-                <h3 className="text-xl font-bold text-light mb-4">Description</h3>
-                <p className="text-light">{product.description}</p>
-              </div>
-            )}
+           
             {/* Final Price and Add to Cart Button */}
 
             <div className="flex items-center justify-between bg-light rounded-xl p-6 mb-8">

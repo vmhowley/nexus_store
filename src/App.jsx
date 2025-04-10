@@ -41,7 +41,7 @@ function App() {
             <Route path="/support" element={<Support />} />
             <Route path="order-success/:ssid" element={<OrderSuccess />} />
             <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/admin" element={<Admin />} />
+            <Route path="/admin/:pwd" element={<Admin />} />
           </Routes>
           <footer className="bg-dark text-accent py-12 border-t border-lime-500/20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">

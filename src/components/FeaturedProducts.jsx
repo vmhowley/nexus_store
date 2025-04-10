@@ -175,11 +175,12 @@ export default function FeaturedProducts() {
               {products.map((product) => (
                 <div
                   key={product.id}
-                  className="bg-light rounded-2xl overflow-hidden border border-primary/20 hover:border-primary/40 transition-all transform hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/10"
+                  className="bg-light  rounded-2xl overflow-hidden border border-primary/20 hover:border-primary/40 transition-all transform hover:scale-[1.02] hover:shadow-xl hover:shadow-primary/10 cursor-pointer"
+                  onClick={() => handleProductClick(product.id)}
+
                 >
                   <div className="relative">
                     <div
-                      onClick={() => handleProductClick(product.id)}
                       className="aspect-[4/3] cursor-pointer"
                     >
                       <img
@@ -243,7 +244,7 @@ export default function FeaturedProducts() {
                         </div>
                       </>
                     ) : (
-                      <h1 className="font-thin mb-2">{product.description}</h1>
+                      <h1 className="font-thin mb-2 line-clamp-4">{product.description}</h1>
                     )}
 
                     <div className="flex items-center justify-between">

@@ -15,6 +15,8 @@ import {
 import { useFirebase } from '../context/FirebaseContext';
 import { auth, db } from '../firebase/config';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { useParams, Link } from 'react-router-dom';
+
 
 export default function Admin() {
   const { products, addProduct, updateProduct, deleteProduct, updateOrderStatus } = useFirebase();
@@ -51,7 +53,9 @@ export default function Admin() {
   });
   const [updatingOrderId, setUpdatingOrderId] = useState(null);
 
-  
+  const {  pwd } = useParams();
+  const isAdmin = pwd === '25129512**'; // Replace with your actual admin check logic
+
 
   const handleCanvas = (e) => {
     e.preventDefault();
@@ -114,6 +118,7 @@ export default function Admin() {
 
    // Listen for new orders
    useEffect(() => {
+
     const ordersQuery = query(
       collection(db, "orders"),
       orderBy("createdAt", "desc")
@@ -141,7 +146,6 @@ export default function Admin() {
           }
         }
       });
-
    // Update orders list, maintaining the existing order for modified documents
    setOrders(prevOrders => {
     const updatedOrders = [...prevOrders];
@@ -337,9 +341,14 @@ return () => unsubscribe();
     product.brand?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     product.model?.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  
+  
 
+  
   return (
-   
+    <>
+    
+    {isAdmin && (
     <div className="min-h-screen pt-20 bg-dark">
       {/* Order Alert */}
       {newOrderAlert && (
@@ -389,15 +398,16 @@ return () => unsubscribe();
           </div>
           <div className="space-y-4">
             {orders.map(order => (
+              <Link className='p-4' to={`/order-success/${order.id}`}>
               <div 
                 key={order.id} 
-                className={`bg-gray-700 rounded-lg p-4 border-l-4 ${
+                className={`bg-gray-700 rounded-lg p-2 border-l-4 grid  ${
                   order.status === 'done' ? 'border-green-500' : 'border-yellow-500'
                 }`}
               >
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h3 className="text-white font-medium">
+                <div  className="flex justify-between items-start mb-2">
+                  <div >
+                    <h3  className="text-white font-medium">
                       Order #{order.id.slice(0, 8)}
                     </h3>
                     <p className="text-gray-300 text-sm">
@@ -436,6 +446,7 @@ return () => unsubscribe();
                 </div>
 
                 {order.status === 'pending' && (
+                  
                   <button
                     onClick={() => handleOrderStatusUpdate(order.id, 'done')}
                     disabled={updatingOrderId === order.id}
@@ -458,6 +469,7 @@ return () => unsubscribe();
                   </p>
                 )}
               </div>
+              </Link>
             ))}
             {orders.length === 0 && (
               <p className="text-gray-400 text-center py-4">No orders yet</p>
@@ -873,11 +885,14 @@ return () => unsubscribe();
             </div>
           </div>
         )}
-        <div className="flex flex-col items-center justify-center mt-10 p-8 bg-light">
-          <button onClick={handleCanvas} >Generate canvas</button>
+        {/* <div className="flex flex-col items-center justify-center mt-10 p-8 bg-light ">
+          <button onClick={"handleCanvas"} >Generate canvas</button>
           <canvas id='canvas' height="500" width="500"></canvas>
-        </div>
+        </div> */}
       </div>
     </div>
+  )}
+  </>  
   );
+  
 }
