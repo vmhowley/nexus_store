@@ -86,8 +86,8 @@ export default function ProductDetail() {
   const settings = {
     customPaging: function(i) {
       return (
-        <a>
-          <img src={`${baseUrl}/abstract0${i + 1}.jpg`} />
+        <a className=''>
+          <img src={product.images[i]} alt={`Thumbnail ${i} `} />
         </a>
       );
     },
@@ -106,38 +106,31 @@ export default function ProductDetail() {
           <div className="relative  ">
             {product.images.length > 1 && (
               <Slider
-              
-              className='rounded-2xl xl:w-[460px] mx-auto'
-                dots
-                infinite
-                speed={500}
-                slidesToShow={1}
-                slidesToScroll={1}
-                arrows
-
+                {...settings}
+                className="rounded-2xl max-w-[600px] max-h-[600px] bg-white"
               >
                 {product.images.map((img, index) => (
-                    <div className='rounded-2xl' key={index}>
+                  <div
+                    className="rounded-2xl"
+                    key={index}
+                  >
                     <img
                       src={img}
                       alt={product.name}
-                      className=" rounded-2xl lg:w-[460px] lg:h-[460px] bg-white"
+                      className="rounded-2xl object-cover w-full h-full bg-white"
                     />
                   </div>
-
                 ))}
               </Slider>
             )}
             {product.images.length === 1 && (
-              <div className='rounded-2xl lg:w-[460px] mx-auto'>
-
-              <img
-                src={product.images[0]}
-                alt={product.name}
-                className="lg:w-[460px] lg:h-[460px] bg-white rounded-2xl shadow-2xl object-contain object-center"
-              />
+              <div className="rounded-2xl bg-white flex place-content-center ">
+                <img
+                  src={product.images[0]}
+                  alt={product.name}
+                  className="max-h-[600px] object-contain object-center rounded-2xl"
+                />
               </div>
-
             )}
             {/* Wishlist button */}
 
@@ -156,7 +149,7 @@ export default function ProductDetail() {
               {product.name}
             </h1>
 
-            {product.configurations.processors[0].name != '' && (
+            {product.configurations.processors[0].name != "" && (
               <div className="mb-8">
                 <h3 className="text-xl font-bold text-light mb-4">
                   Customize your PC
@@ -185,26 +178,30 @@ export default function ProductDetail() {
                 ))}
               </div>
             )}
-             {/* Product Description */}
-             {product.description && (
+            {/* Product Description */}
+            {product.description && (
               <div className="mb-8">
-                <h3 className="text-xl font-bold text-light mb-4">Description</h3>
+                <h3 className="text-xl font-bold text-light mb-4">
+                  Description
+                </h3>
                 <p className="text-light">{product.description}</p>
               </div>
             )}
-            
+
             {/* Product Features */}
             {product.features && (
               <div className="mb-8">
                 <h3 className="text-xl font-bold text-light mb-4">Features</h3>
                 <ul className="list-disc list-inside space-y-2">
                   {product.features.map((feature, index) => (
-                    <li key={index} className="text-light">{feature}</li>
+                    <li key={index} className="text-light">
+                      {feature}
+                    </li>
                   ))}
                 </ul>
               </div>
             )}
-           
+
             {/* Final Price and Add to Cart Button */}
 
             <div className="flex items-center justify-between bg-light rounded-xl p-6 mb-8">
@@ -227,3 +224,4 @@ export default function ProductDetail() {
     </div>
   );
 }
+
