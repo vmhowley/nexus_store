@@ -16,7 +16,7 @@ import { useFirebase } from '../context/FirebaseContext';
 import { auth, db } from '../firebase/config';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { useParams, Link } from 'react-router-dom';
-
+import background from '../assets/images/background.jpg';
 
 export default function Admin() {
   const { products, addProduct, updateProduct, deleteProduct, updateOrderStatus } = useFirebase();
@@ -58,61 +58,57 @@ export default function Admin() {
 
 
   const handleCanvas = (e) => {
-    e.preventDefault();
     const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext("2d");
-
-    canvas.style.background = "#02353C"
-    const baselinesAboveAlphabetic = [
-      "fontBoundingBoxAscent",
-      "actualBoundingBoxAscent",
-      "emHeightAscent",
-      "hangingBaseline",
-    ];
-    const baselinesBelowAlphabetic = [
-      "ideographicBaseline",
-      "emHeightDescent",
-      "actualBoundingBoxDescent",
-      "fontBoundingBoxDescent",
-    ];
-    const baselines = [...baselinesAboveAlphabetic, ...baselinesBelowAlphabetic];
-    ctx.font = "25px serif";
-    ctx.strokeStyle = "red";
-    
-    baselines.forEach((baseline, index) => {
-      const text = 'NEXUS';
-      ctx.fillStyle = "white";
-      // const textMetrics = ctx.measureText(text);
-      
-      const x = 20 +index * 20;
-      const y = 50 + index * 50;
-      ctx.beginPath();
-      ctx.font = "30px serif";
-      ctx.fillText(text, x, y-5);
-      let pos = products[0].model.search(" ")
-      console.log(pos)
-      const model = products[0].model.slice(0, pos);
-      const model2 = products[0].model.slice(pos);
-      console.log(model)
-      const text1 = model;
-      ctx.font = "40px serif";
-      ctx.fillText(text1, x, y+60);
-      
-      ctx.fillStyle = "red";
-      ctx.fillRect(x, y+85, 100, parseInt("40px serif", 10));
-      ctx.font = "30px serif";
-      ctx.fillStyle = "white";
-      const text2 = model2;
-      ctx.fillText(text2, x, y+118);
-      ctx.fillRect(0, y+150, 500, parseInt("200px serif", 10));
-      
-      const baselineMetricValue = textMetrics[baseline];
-      if (baselineMetricValue === undefined) {
-        return;
-      }
-
+    const ctx = canvas.getContext('2d');
   
-    });
+    // Background
+    ctx.fillStyle = '#0f4d58';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+  
+    // Logo text
+    ctx.fillStyle = '#ffffff';
+    ctx.font = 'bold 40px Arial';
+    ctx.fillText('NE', 50, 60);
+  
+    ctx.fillStyle = '#00ff88';
+    ctx.fillText('X', 105, 60);
+  
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('US', 130, 60);
+  
+    ctx.font = '16px Arial';
+    ctx.fillText('NEXT-GEN COMPUTING', 50, 85);
+  
+    // Product name
+    ctx.font = 'bold 100px Arial';
+    ctx.fillStyle = '#C1F6ED';
+    ctx.fillText(products[4].brand.toUpperCase(), 50, 200);
+    
+    //Model text
+    ctx.fillStyle = '#C1F6ED';
+    let pos = products[4].model.search(" ")
+    ctx.font = 'bold 36px Arial';
+    ctx.fillText(products[4].model.slice(0, pos).toUpperCase(), 57, 254);
+    
+    // Model box
+    ctx.fillStyle = '#3FD0C9';
+    ctx.fillRect(57, 258, 160, 70);
+
+    ctx.fillStyle = '#02353C';
+    ctx.fillText(products[4].model.slice(pos).toUpperCase(), 57, 300);
+    
+    // Laptop image
+    const laptopImg = new Image();
+    laptopImg.src = 'https://imgs.search.brave.com/22ufSRysf7RaHgPiRVbQunL_asu280q8txIVCFdIML4/rs:fit:860:0:0:0/g:ce/aHR0cHM6Ly93d3cu/cG5nYWxsLmNvbS93/cC1jb250ZW50L3Vw/bG9hZHMvOC9MZW5v/dm8ucG5n';
+    laptopImg.onload = () => {
+      ctx.drawImage(laptopImg, 0, 400, 400, 250);
+  
+      // Specs
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '24px Arial';
+      ctx.fillText('12GB RAM, 256GB SSD', 450, 500);
+      ctx.fillText('INTEL CORE I5', 450, 540);
+    };
   }
 
 
@@ -885,10 +881,10 @@ return () => unsubscribe();
             </div>
           </div>
         )}
-        {/* <div className="flex flex-col items-center justify-center mt-10 p-8 bg-light ">
-          <button onClick={"handleCanvas"} >Generate canvas</button>
-          <canvas id='canvas' height="500" width="500"></canvas>
-        </div> */}
+         <div className="flex flex-col items-center justify-center mt-10 p-8 bg-light ">
+          <button onClick={handleCanvas} >Generate canvas</button>
+          <canvas id='canvas' height="720" width="720"></canvas>
+        </div> 
       </div>
     </div>
   )}
