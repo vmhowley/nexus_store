@@ -245,7 +245,7 @@ export default function Cart() {
                   >
                     <div className="flex items-center gap-6">
                       <img
-                        src={item.images[0]}
+                        src={item.images && item.images[0] }
                         alt={item.name}
                         className="w-24 h-24 object-cover rounded-lg"
                       />

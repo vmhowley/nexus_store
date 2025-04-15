@@ -56,102 +56,94 @@ export default function Admin() {
   const {  pwd } = useParams();
   const isAdmin = pwd === '25129512**'; // Replace with your actual admin check logic
 
-
   const handleCanvas = (product) => {
-    const canvas = document.getElementById('canvas');
-    const ctx = canvas.getContext('2d');
-    const downloadButton = document.getElementById('downloadpng');
+    const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-    // Background
-    ctx.fillStyle = '#0f4d58';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-  
-    // Logo text
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 40px Arial';
-    ctx.fillText('NE', 50, 60);
-  
-    ctx.fillStyle = '#00ff88';
-    ctx.fillText('X', 105, 60);
-  
-    ctx.fillStyle = '#ffffff';
-    ctx.fillText('US', 130, 60);
-  
-    ctx.font = '16px Arial';
-    ctx.fillText('NEXT-GEN COMPUTING', 50, 85);
-  
-    // Product name
-    ctx.font = 'bold 100px Arial';
-    ctx.fillStyle = '#C1F6ED';
-    ctx.fillText(product.brand.toUpperCase(), 50, 200);
+canvas.width = 768;
+canvas.height = 768;
+
+// Fondo liso con nuevo color
+ctx.fillStyle = "#014751";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+// Título
+ctx.fillStyle = "#ffffff";
+ctx.font = "48px sans-serif";
+ctx.textAlign = "left";
+ctx.fillText("NE", 60, 80);
+ctx.fillStyle = "#00f287";
+ctx.fillText("X", 135, 80);
+ctx.fillStyle = "#ffffff";
+ctx.fillText("US", 160, 80);
+
+ctx.font = "18px sans-serif";
+ctx.fillText("NEXT-GEN COMPUTING", 60, 110);
+
+// Lenovo text
+ctx.font = "36px sans-serif";
+ctx.fillStyle = "#c8f1ef";
+ctx.fillText("LENOVO", 60, 170);
+ctx.font = "24px sans-serif";
+ctx.fillText("IDEA", 60, 210);
+
+// Modelo destacado
+ctx.fillStyle = "#00e6c3";
+ctx.fillRect(60, 230, 120, 35);
+ctx.fillStyle = "#014751";
+ctx.font = "bold 20px sans-serif";
+ctx.fillText("V14-IIL", 70, 255);
+
+// Imagen de laptop
+const laptopImg = new Image();
+laptopImg.crossOrigin = "anonymous";
+laptopImg.src = "https://m.media-amazon.com/images/I/717koZL94mL.__AC_SY300_SX300_QL70_FMwebp_.jpg";
+
+laptopImg.onload = () => {
+  ctx.drawImage(laptopImg, 420, 180, 270, 200);
+
+  // Especificaciones en cuadro verde
+  ctx.fillStyle = "#00ff99";
+  ctx.fillRect(400, 410, 330, 100);
+
+  ctx.fillStyle = "#000000";
+  ctx.font = "16px sans-serif";
+  ctx.fillText("🧠 Intel Core i5 (1035G1)", 420, 440);
+  ctx.fillText("💾 12GB DDR4", 420, 465);
+  ctx.fillText("💽 256GB SSD NVMe", 420, 490);
+
+  // Botón
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(60, 680, 160, 40);
+  ctx.fillStyle = "#014751";
+  ctx.font = "18px sans-serif";
+  ctx.fillText("COMPRAR AHORA", 70, 707);
     
-    //Model text
-    ctx.fillStyle = '#C1F6ED';
-    let pos = product.model.search(" ")
-    ctx.font = 'bold 36px Arial';
-    ctx.fillText(product.model.slice(0, pos).toUpperCase(), 57, 240);
+    // Extensión para esquinas redondeadas
+    CanvasRenderingContext2D.prototype.roundRect = function (x, y, width, height, radius) {
+      if (width < 2 * radius) radius = width / 2;
+      if (height < 2 * radius) radius = height / 2;
+      this.beginPath();
+      this.moveTo(x + radius, y);
+      this.arcTo(x + width, y, x + width, y + height, radius);
+      this.arcTo(x + width, y + height, x, y + height, radius);
+      this.arcTo(x, y + height, x, y, radius);
+      this.arcTo(x, y, x + width, y, radius);
+      this.closePath();
+      return this;
+    };
+    };
     
-    // Model box
-    ctx.fillStyle = '#3FD0C9';
-    ctx.fillRect(57, 250, 160, 70);
+  
+      // Exportar
+      const downloadButton = document.getElementById('downloadpng');
+      const pngDownload = canvas.toDataURL('image/png');
+      downloadButton.href = pngDownload;
 
-    ctx.fillStyle = '#02353C';
-    ctx.fillText(product.model.slice(pos).toUpperCase(), 57, 295);
-    const newColor = { r: 15, g: 77, b: 88, a: 255 }; // Color personalizado
-
-    // Laptop image
-    const laptopImg = new Image();
-    laptopImg.crossOrigin = 'anonymous';
-    laptopImg.src = product.images[0];
-    // laptopImg.onload = () => {
-    //   ctx.drawImage(laptopImg, 0, 400, 250, 250);
-    //   const imgd = ctx.getImageData(0, 400, 400, 250);
-    //   const pix = imgd.data;
+  };
   
-    //   const baseTolerance = 65;  // Tolerancia para detectar blanco
-    //   const edgeFeather = 55;    // Ancho de feathering/mezcla
   
-    //   function colorDistance(r1, g1, b1, r2, g2, b2) {
-    //       return Math.sqrt((r1 - r2) ** 2 + (g1 - g2) ** 2 + (b1 - b2) ** 2);
-    //   }
   
-    //   for (let i = 0; i < pix.length; i += 4) {
-    //       const r = pix[i];
-    //       const g = pix[i + 1];
-    //       const b = pix[i + 2];
-  
-    //       const dist = colorDistance(r, g, b, 255, 255, 255);
-  
-    //       if (dist < baseTolerance) {
-    //           // Blanco directo → cambiar a nuevo color
-    //           pix[i] = newColor.r;
-    //           pix[i + 1] = newColor.g;
-    //           pix[i + 2] = newColor.b;
-    //           pix[i + 3] = newColor.a;
-    //       } else if (dist < baseTolerance + edgeFeather) {
-    //           // Feathering → mezcla gradual
-    //           const t = (dist - baseTolerance) / edgeFeather;
-  
-    //           pix[i] = r * (1 - t) + newColor.r * t;
-    //           pix[i + 1] = g * (1 - t) + newColor.g * t;
-    //           pix[i + 2] = b * (1 - t) + newColor.b * t;
-    //           pix[i + 3] = 255;
-    //       }
-    //   }
-    //   ctx.putImageData(imgd, 0, 400);
-
-    // };
-    // Specs
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '24px Arial';
-    ctx.fillText(product.specs.ram, 450, 600);
-    ctx.fillText(product.specs.disk, 450, 626);
-    ctx.fillText(product.specs.cpu, 450, 648);
-    const pngDownload = canvas.toDataURL('image/png')
-    downloadButton.href = pngDownload;
-
-  }
-
 
    // Listen for new orders
    useEffect(() => {
@@ -1009,9 +1001,9 @@ return () => unsubscribe();
                 </div>
               </div>
             )}
-            <div className="flex flex-col items-center justify-center mt-10 p-8 bg-light ">
-              <canvas id="canvas" height="720" width="720"></canvas>
-              <a id='downloadpng' href='#' download>Descargar Canvas</a>
+            <div className={`flex flex-col items-center justify-center mt-10  gap-4  relative`}>
+              <a className='rounded-2xl font-bold animate-pulse hover:animate-none hover:bg-secondary bg-primary p-2 absolute top-4 right-20 ' id='downloadpng' href='#' download>Descargar Canvas</a>
+              <canvas className='' id="canvas" ></canvas>
               </div>
           </div>
         </div>
