@@ -103,32 +103,33 @@ export default function ProductDetail() {
     <div className="pt-20 bg-dark min-h-screen px-4">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <div className="relative  ">
+          <div className="relative">
+            {/* Product Images Slider */}
+
             {product.images.length > 1 && (
-              <Slider
-                {...settings}
-                className="rounded-2xl max-w-[600px] max-h-[600px] bg-white"
-              >
+              <Slider {...settings} className="rounded-2xl ">
                 {product.images.map((img, index) => (
                   <div
-                    className="rounded-2xl"
+                    className='grid justify-center place content-center items-center bg-white rounded-2xl min-h-[600px] "
+'
                     key={index}
                   >
                     <img
                       src={img}
                       alt={product.name}
-                      className="rounded-2xl object-cover w-full h-full bg-white"
+                      className="rounded-2xl  p-4"
                     />
                   </div>
                 ))}
               </Slider>
             )}
+
             {product.images.length === 1 && (
-              <div className="rounded-2xl bg-white flex place-content-center ">
+              <div className="grid justify-center place content-center items-center bg-white rounded-2xl min-h-[600px] ">
                 <img
                   src={product.images[0]}
                   alt={product.name}
-                  className="max-h-[600px] object-contain object-center rounded-2xl"
+                  className="rounded-2xl  p-4"
                 />
               </div>
             )}
